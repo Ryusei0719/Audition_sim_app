@@ -28,26 +28,33 @@ with st.form(key = 'sim_info'):
             value = 29,
             key = 'week'
         )
+    memory_lv = st.number_input(
+        label = '思い出レベル',
+        step = 1,
+        min_value = 0,
+        max_value = 5,
+        key = 'memory_lv'
+    )
     
     st.text('ステータス')
     status = {"Vo":None,"Da":None,"Vi":None,"Me":500,"name":"Myunit","P_idol":st.session_state.Pidol_name}
     col1,col2,col3 = st.columns(3)
     
     with col1:
-        Vo = st.number_input(
+        status['Vo'] = st.number_input(
             label='Vo',
             value = 500,
             key = 'Vo_status'
         )
         
     with col2:
-        Da = st.number_input(
+        status['Da'] = st.number_input(
             label='Da',
             value = 500,
             key = 'Da_status'
         )
     with col3:
-        Vi = st.number_input(
+        status['Vi'] = st.number_input(
             label='Vi',
             value = 500,
             key = 'Vi_status'
@@ -71,7 +78,7 @@ with st.form(key = 'sim_info'):
             )
             weapon_list[i] = st.selectbox(
                 '札',
-                ('Perfect','Good','Normal','Bad'),
+                list(st.session_state.Pweapon_dict.keys())+st.session_state.support_list+['おまかせ'],
                 key = f'weapon{i}'
             )
             
@@ -79,10 +86,11 @@ with st.form(key = 'sim_info'):
     
     if sim_btn:
         st.text('シュミレーション中')
-        st.text('_'.join(aim_list))
+        st.session_state.status = status
         st.session_state.trend = [trend[x:x+2] for x in range(0, len(trend), 2)]
         st.session_state.aim_list = aim_list
+        st.session_state.weapon_list = ['*' if x == 'おまかせ' else x for x in weapon_list]
         st.session_state.critical_list = [critical_dict[x] for x in critical_list]
-        st.text(st.session_state)
+        st.write(sumilate())
 
 # %%

@@ -1,4 +1,5 @@
 from multiprocessing import allow_connection_pickling
+import streamlit_nested_layout
 import streamlit as st
 from passive import *
 from func import *
@@ -19,6 +20,7 @@ passive_dict = cache_dict()
 
 name = ''
 buffs = [["Vo",0],["Da",0],["Vi",0],['At',0],['Av',0]]
+buffs = {"Vo":0,"Da":0,"Vi":0}
 val = None
 times = 0
 p = 0
@@ -45,14 +47,20 @@ with tab1:
     )
     
     cl1,cl2,cl3 = st.columns(3)
-    st.text('バフ倍率(%)を入力')
+    
     with cl1:
-        buffs[0][1] = st.number_input('Vo',value=0)
-        buffs[1][1] = st.number_input('Da',value=0)
-        buffs[2][1] = st.number_input('Vi',value=0)
+        st.text('バフ倍率(%)を入力')
+        buffs["Vo"] = st.number_input('Vo',value=0,step=10,min_value=0)
+        buffs["Da"] = st.number_input('Da',value=0,step=10,min_value=0)
+        buffs["Vi"] = st.number_input('Vi',value=0,step=10,min_value=0)
         with st.expander("その他"):
-            buffs[3][1] = st.number_input('注目度',value=0)
-            buffs[4][1] = st.number_input('回避率',value=0)
+            type = st.selectbox(
+                'バフ種',
+                ['注目度','回避率','パッシブ発動率アップ']
+            )
+            icon =  {v:k for k,v in buff_icon_dict.items()}[type]
+            buffs[icon] = st.number_input('バフ倍率(%)',value=0,step=10,min_value=0,max_value=100)
+                
         
     
     with cl2:
@@ -67,12 +75,10 @@ with tab1:
             val = {v:k for k,v in buff_icon_dict.items()}[color]
             
         if condition_func == before_turn_requirement:
-           turn = st.number_input('(N)',value=0)
-           val = turn
+           val = st.number_input('(N)',value=0,min_value=0)
         
         if condition_func == after_turn_requirement:
-            turn = st.number_input('(N)',value=0)
-            val = turn
+            val = st.number_input('(N)',value=0,min_value=0)
                
         if condition_func == history_requirement:
             idols = st.multiselect(
@@ -81,13 +87,21 @@ with tab1:
             )
             val = idols
             st.text(val)
+        if condition_func == possibility_requirement:
+            val = [0,0,0,0,0]
+            for i in range(5):
+                val[i] = st.number_input(str(i+1)+'tに鳴く確率',value=0.0,step=0.1,min_value=0.0)
+
             
     with cl3:
-        times = st.number_input('最大発動回数',value=0)
-        p = st.number_input('発動確率',value=0)
+        times = st.number_input('最大発動回数',value=0,min_value=0)
+        p = st.number_input('発動確率',value=0,min_value=0,step=10)
 
-    buffs = [buff for buff in buffs if buff[1]>0]
-    passive = Passive_template(name,times,p,condition_func,buffs,val)
+    buff_list = []
+    for key,value in buffs.items():
+        if value>0:
+            buff_list.append([key,value])
+    passive = Passive_template(name,times,p,condition_func,buff_list,val)
 
     st.markdown("***")
     st.text(passive.get_text())
@@ -113,25 +127,24 @@ with tab2:
         
 st.markdown("***")
 st.subheader('登録されているパッシブスキル')
-with st.form('passive_regi'):
-    for name,passive in passive_dict.items():
-        st.text(name)
-        st.caption(passive.get_text())
-    with st.expander("登録パッシブを消去する"):
-        delete = st.selectbox(
-            're',
-            passive_list,
-            label_visibility='hidden'
-        )
-        del_btn = st.form_submit_button('このパッシブを消去する')
-        if del_btn:
-            passive_list.remove(delete)
-            del passive_dict[delete]
-    
-    submitted = st.form_submit_button("このパッシブで決定する")
-    if submitted:
-        st.session_state.passive_list =passive_list
-        st.session_state.passive_dict=passive_dict
+for name,passive in passive_dict.items():
+    st.text(name)
+    st.caption(passive.get_text())
+with st.expander("登録パッシブを消去する"):
+    delete = st.selectbox(
+        're',
+        passive_list,
+        label_visibility='hidden'
+    )
+    del_btn = st.button('このパッシブを消去する')
+    if del_btn:
+        passive_list.remove(delete)
+        del passive_dict[delete]
+
+submitted = st.button("このパッシブで決定する")
+if submitted:
+    st.session_state.passive_list =passive_list
+    st.session_state.passive_dict=passive_dict
         
 
 

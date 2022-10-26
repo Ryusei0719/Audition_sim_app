@@ -47,6 +47,8 @@ def get_condition_name(func,val):
         return f'{val[0]}ターン以前'
   elif func == history_requirement:
         return '履歴に'+",".join(val[0])+'がある場合'
+  elif func == possibility_requirement:
+    return f'{val[0]}の確率で発動'
 
 
       
@@ -105,7 +107,8 @@ condition_name_dict = {
   '(属性)UPが付与されている場合':buff_requirement,
   '(N)ターン以前':before_turn_requirement,
   '(N)ターン以後':after_turn_requirement,
-  '履歴に(アイドル)がある場合':history_requirement
+  '履歴に(アイドル)がある場合':history_requirement,
+  'それ以外':possibility_requirement
 }
   
 buff_icon_dict ={

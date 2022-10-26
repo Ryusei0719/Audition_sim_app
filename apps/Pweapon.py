@@ -1,11 +1,140 @@
 from func import *
 #自札の登録
-class Pwaepon_template:
-  def __init__(self,idol,card_name,totsu,ATK_fanc):
+
+class Pweapon_template:
+  '''
+  info_dict = {
+    'type' = 'single'or 'whole'
+    weapon_rate = {'Vo':x,'Da':x,'Vi':x}
+    buff = [{"color":color,"buff":10,"turn":3,"name":"櫻木真乃花風smiley0凸","fanc":None}
+            ]
+    link = ['ATK',{'Vo':x,'Da':x,'Vi':x}](追撃)
+    link = ['buff',[{"color":color,"buff":10,"turn":3,"name":"櫻木真乃花風smiley0凸","fanc":None}
+            ]]
+
+   }
+  '''
+
+  def __init__(self,idol,name,info_dict,special=None):
     self._idol = idol
-    self._card_name = card_name
-    self._key = idol + card_name + str(totsu) + "凸"
-    self.get_ATK = ATK_fanc
+    self._name = name
+    self.info = info_dict
+    self._special = special
+  
+  def get_ATK(self,P_ATK,week,critical,support_list,skill_history,buff_list,buff_add =True):
+    if self._special =='ピトス':
+      return  pitosu4(P_ATK,week,critical,support_list,skill_history,buff_list,buff_add)
+    else:
+      ATK_dict = {}
+      link_flg = chk_link(skill_history,self._idol)
+      weapon_rate=self.info['weapon_dict']
+      buff_dict = get_buff(buff_list)
+      for color in color_list:
+        buff = buff_dict[color]
+        S_status = 0
+        for support in support_list:
+          S_status += support_df.at[support,"{0}_status".format(color)]
+        if link_flg and self.info['link'][0] == 'ATK':
+          weapon_rate[color] += self.info['link'][1][color]
+        ATK = int(int(int(P_ATK[color]*2 + S_status * 0.2 * (1 + 0.1*week)) * buff*critical )*weapon_rate[color])
+        ATK_dict[color] = ATK
+        if buff_add:
+          buff_list.expand(self.info['buff'])
+          if link_flg and self.info['link'][0] == 'buff':
+            buff_list.expand(self.info['link'][1])
+      return self.info['type'],ATK_dict
+  
+  def get_text(self):
+    txt = ''
+    if self.info['type'] == 'whole':
+      txt += '全観客に'
+    for color,rate in self.info['weapon_rate'].items():
+      if rate>0:
+        txt += color
+        txt += str(rate)
+        txt += '倍アピール'
+    txt += '/'
+    for buff in self.info['buff']:
+      txt += buff['color']
+      txt += str(buff['buff'])
+      txt += '%UP'
+      turn = buff['turn']
+      txt += f'[{turn}ターン]/'
+    txt += '\n'
+    link = self.info['link']
+    if link[0] == 'ATK':
+      txt += 'Link: '
+      if self.info['type'] == 'whole':
+        txt += '全観客に'
+      for color,rate in link[1].items():
+        if rate>0:
+          txt += color
+          txt += str(rate)
+          txt += '倍アピール'
+    if link[0] == 'buff':
+      txt += 'Link: '
+      for buff in link[1]:
+        txt += buff['color']
+        txt += str(buff['buff'])
+        txt += '%UP'
+        turn = buff['turn']
+        txt += f'[{turn}ターン]/'
+
+    return txt
+
+
+color_dict = {
+  'Vocal':['Vo'],
+  'Dance':['Da'],
+  'Visual':['Vi'],
+  'Vocal&Dance':['Vo','Da'],
+  'Dance&Visual':['Da','Vi'],
+  'Visual&Vocal':['Vi','Vo'],
+  'Vocal&Danec&Visual':['Vo','Da','Vi'],
+  '注目度':['At'],
+  '回避率':['Av'],
+  'パッシブ発動率':['PASIVEpr']
+}
+
+eki = Pweapon_template('P','駅4凸',
+        {'type':'single',
+        'weapon_rate':{'Vo':0,'Da':2.0,'Vi':2.0},
+        'buff':[{"color":'Da',"buff":20,"turn":3,"name":"駅線上の日常4凸","fanc":None},
+                {"color":'Da',"buff":20,"turn":3,"name":"駅線上の日常4凸","fanc":None}],
+        'link':[None,None]
+        }
+        )
+
+umi = Pweapon_template('P','海4凸',
+        {'type':'single',
+        'weapon_rate':{'Vo':0,'Da':3.0,'Vi':1.5},
+        'buff':[{"color":'Da',"buff":30,"turn":3,"name":"水面仰いで海の底4凸","fanc":None},
+                {"color":'Da',"buff":30,"turn":3,"name":"水面仰いで海の底4凸","fanc":None}],
+        'link':[None,None]
+        }
+        )
+
+def pitosu_buff(situation):
+  avoid = 0
+  for buff_dict in situation["buff_list"]+situation["passive_list"]:
+    if buff_dict["color"] == "Av":
+      avoid += buff_dict["buff"]/100
+  return random.choices([80,160,240,0],weights=[3*avoid/8,3*avoid/8,1*avoid/8,1-7*avoid/8])[0]
+pitosu = Pweapon_template('樋口円香','ピトス・エルピス',
+        {'type':'whole',
+        'weapon_rate':{'Vo':0,'Da':0,'Vi':4.0},
+        'buff':[{"color":'Vi',"buff":0,"turn":3,"name":"ピトス","fanc":pitosu_buff},
+                {"color":'Av',"buff":10,"turn":4,"name":"ピトス","fanc":None}],
+        'link':[None,None]
+        }
+        )
+
+all_weapon_dict = {
+  '駅線上の日常':eki,
+  '水面を仰いで海の底':umi,
+  'ピトス・エルピス':pitosu
+}
+  
 
 #花風smiley0凸
 def hanakaze0(P_ATK,week,critical,support_list,skill_history,buff_list,buff_add =True):
@@ -112,43 +241,6 @@ def shutter4(P_ATK,week,critical,support_list,skill_history,buff_list,buff_add=T
     buff_list.append({"color":"Vi","buff":30,"turn":5,"name":"シャッター4凸","fanc":None})
   return "single",ATK_dict
 
-#海4凸(取得札)
-def umi4(P_ATK,week,critical,support_list,skill_history,buff_list,buff_add=True):
-  ATK_dict = {}
-  link_flg = chk_link(skill_history,P_ATK["P_idol"])
-  weapon_rate = [3,1.5]
-  buff_rate = []
-  buff_dict = get_buff(buff_list)
-  for i,color in enumerate(["Da","Vi"]):
-    buff = buff_dict[color]
-    S_status = 0
-    for support in support_list:
-      S_status += support_df.at[support,"{0}_status".format(color)]
-    ATK = int(int(int(P_ATK[color]*2 + S_status * 0.2 * (1 + 0.1*week)) * buff*critical )*weapon_rate[i])
-    ATK_dict[color] = ATK
-    if buff_add:
-      buff_list.append({"color":color,"buff":30,"turn":3,"name":P_ATK["P_idol"]+"水面仰いで海の底4凸","fanc":None})
-  ATK_dict["Vo"] = 0
-  return "single",ATK_dict
-
-#駅4凸
-def eki4(P_ATK,week,critical,support_list,skill_history,buff_list,buff_add=True):
-  ATK_dict = {}
-  link_flg = chk_link(skill_history,P_ATK["P_idol"])
-  weapon_rate = [2,2]
-  buff_rate = []
-  buff_dict = get_buff(buff_list)
-  for i,color in enumerate(["Da","Vi"]):
-    buff = buff_dict[color]
-    S_status = 0
-    for support in support_list:
-      S_status += support_df.at[support,"{0}_status".format(color)]
-    ATK = int(int(int(P_ATK[color]*2 + S_status * 0.2 * (1 + 0.1*week)) * buff*critical )*weapon_rate[i])
-    ATK_dict[color] = ATK
-    if buff_add:
-      buff_list.append({"color":color,"buff":20,"turn":3,"name":P_ATK["P_idol"]+"駅線上の日常4凸","fanc":None})
-  ATK_dict["Vo"] = 0
-  return "single",ATK_dict
 
 #ワンデー4凸
 def oneday4(P_ATK,week,critical,support_list,skill_history,buff_list,buff_add=True):
