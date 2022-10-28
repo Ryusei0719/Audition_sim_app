@@ -31,8 +31,8 @@ import numpy as np
 
 Pcard_df = pd.read_csv('datas/ProduceCard_index.csv',index_col=0,encoding="cp932")
 Scard_df = pd.read_csv('datas/SupportCard_index.csv',index_col=None,encoding="cp932")
-EX_df = pd.read_csv('datas/EX_index.csv',index_col=0,encoding="shift-jis")
-audition_df = pd.read_csv('datas/Audition_index.csv',index_col=0,encoding="shift-jis")
+EX_df = pd.read_csv('datas/EX_index.csv',index_col=0,encoding="cp932")
+audition_df = pd.read_csv('datas/Audition_index.csv',index_col=0,encoding="cp932")
 
 with open('datas/rival_move.json') as f:
     hantei_dict = json.load(f)
