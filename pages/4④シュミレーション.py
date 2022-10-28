@@ -1,4 +1,3 @@
-from turtle import textinput
 import streamlit as st
 from func import *
 
