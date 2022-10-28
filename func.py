@@ -29,8 +29,8 @@ from Pweapon import *
 import streamlit as st
 import numpy as np
 
-Pcard_df = pd.read_csv('datas/ProduceCard_index.csv',index_col=0,encoding="shift-jis")
-Scard_df = pd.read_csv('datas/SupportCard_index.csv',index_col=None,encoding="shift-jis")
+Pcard_df = pd.read_csv('datas/ProduceCard_index.csv',index_col=0,encoding="cp932")
+Scard_df = pd.read_csv('datas/SupportCard_index.csv',index_col=None,encoding="cp932")
 EX_df = pd.read_csv('datas/EX_index.csv',index_col=0,encoding="shift-jis")
 audition_df = pd.read_csv('datas/Audition_index.csv',index_col=0,encoding="shift-jis")
 
@@ -513,7 +513,7 @@ def sumilate():
     trend = st.session_state.trend
     itr_num = 1000
     
-    support_df = pd.read_csv('datas/SupportCard_index.csv',index_col=None,encoding="shift-jis").set_index('検索キー')
+    support_df = pd.read_csv('datas/SupportCard_index.csv',index_col=None,encoding="cp932").set_index('検索キー')
   
     log_dict = {
       '1ターン締め':[],
