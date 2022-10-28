@@ -1,5 +1,8 @@
-from func import *
+import func
+import streamlit as st
+import random
 #自札の登録
+color_list = ['Vo','Da','Vi']
 
 class Pweapon_template:
   '''
@@ -26,22 +29,22 @@ class Pweapon_template:
       return  pitosu4(P_ATK,week,critical,support_list,skill_history,buff_list,buff_add)
     else:
       ATK_dict = {}
-      link_flg = chk_link(skill_history,self._idol)
-      weapon_rate=self.info['weapon_dict']
-      buff_dict = get_buff(buff_list)
+      link_flg = func.chk_link(skill_history,self._idol)
+      weapon_rate=self.info['weapon_rate']
+      buff_dict = func.get_buff(buff_list)
       for color in color_list:
         buff = buff_dict[color]
         S_status = 0
         for support in support_list:
-          S_status += support_df.at[support,"{0}_status".format(color)]
+          S_status += st.session_state.support_df.at[support,"{0}_status".format(color)]
         if link_flg and self.info['link'][0] == 'ATK':
           weapon_rate[color] += self.info['link'][1][color]
         ATK = int(int(int(P_ATK[color]*2 + S_status * 0.2 * (1 + 0.1*week)) * buff*critical )*weapon_rate[color])
         ATK_dict[color] = ATK
         if buff_add:
-          buff_list.expand(self.info['buff'])
+          buff_list.extend(self.info['buff'])
           if link_flg and self.info['link'][0] == 'buff':
-            buff_list.expand(self.info['link'][1])
+            buff_list.extend(self.info['link'][1])
       return self.info['type'],ATK_dict
   
   def get_text(self):
@@ -128,14 +131,51 @@ pitosu = Pweapon_template('樋口円香','ピトス・エルピス',
         'link':[None,None]
         }
         )
+#ピトス4凸
+def pitosu4(P_ATK,week,critical,support_list,skill_history,buff_list,buff_add=True):
+  ATK_dict = {}
+  link_flg = func.chk_link(skill_history,P_ATK["P_idol"])
+  weapon_rate = 4
+  buff_rate = []
+  buff_dict = func.get_buff(buff_list)
+  buff = buff_dict["Vi"]
+  S_status = 0
+  for support in support_list:
+    S_status += st.session_state.support_df.at[support,"{0}_status".format("Vi")]
+  ATK = int(int(int(P_ATK["Vi"]*2 + S_status * 0.2 * (1 + 0.1*week)) * buff*critical)*weapon_rate)
+  ATK_dict["Vi"] = ATK
+  if buff_add:
+    buff_list.append({"color":"Vi","buff":0,"turn":3,"name":"ピトス","fanc":pitosu_buff})
+    buff_list.append({"color":"Av","buff":10,"turn":4,"name":"ピトス","fanc":None})
+  ATK_dict["Vo"] = 0
+  ATK_dict["Da"] = 0
+  return "whole",ATK_dict
 
 all_weapon_dict = {
   '駅線上の日常':eki,
   '水面を仰いで海の底':umi,
   'ピトス・エルピス':pitosu
 }
-  
 
+def get_default_weapon_dict(idol):
+  Vo1 = Pweapon_template(idol,'Vo1倍アピール',{'type':'single','weapon_rate':{'Vo':1,'Da':0,'Vi':0},
+    'buff':[],'link':[None,None]})
+  Da1 = Pweapon_template(idol,'Da1倍アピール',{'type':'single','weapon_rate':{'Vo':0,'Da':1,'Vi':0},
+          'buff':[],'link':[None,None]})
+  Vi1 = Pweapon_template(idol,'Vi1倍アピール',{'type':'single','weapon_rate':{'Vo':0,'Da':0,'Vi':1},
+          'buff':[],'link':[None,None]})
+  mental_cure = Pweapon_template(idol,'メンタルキュア',{'type':'single','weapon_rate':{'Vo':0,'Da':0,'Vi':0},
+          'buff':[],'link':[None,None]})
+      
+      
+  return {
+            'Vocal1倍アピール':Vo1,
+            'Dance1倍アピール':Da1,
+            'Visual1倍アピール':Vi1,
+            'メンタルキュア':mental_cure
+          }
+  
+'''
 #花風smiley0凸
 def hanakaze0(P_ATK,week,critical,support_list,skill_history,buff_list,buff_add =True):
   ATK_dict = {}
@@ -362,3 +402,5 @@ def mikomano4(P_ATK,week,critical,support_list,skill_history,buff_list,buff_add=
   if buff_add:
     buff_list.append({"color":"PASSIVEpr","buff":20,"turn":3,"name":"春日影、さんならび4凸","fanc":None})
   return "single",ATK_dict 
+  
+'''

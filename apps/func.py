@@ -17,7 +17,7 @@ idol_list = ("櫻木真乃","風野灯織","八宮めぐる",
 
 critical_dict = {"p":1.5,"g":1.1,"n":1.0,"b":0.5,"m":1.5}
 color_list = ["Vo","Da","Vi"]
-critical_dict = {"Perfect":1.5,"Good":1.1,"Normal":1.0,"Bad":0.5,"Memory":1.5}
+critical_full_name_dict = {"Perfect":1.5,"Good":1.1,"Normal":1.0,"Bad":0.5,"Memory":1.5}
 appeal_name = {1.5:"Perfect",1.1:"Good",1.0:"Normal",0.5:"Bad"}
 
 #%%
@@ -27,12 +27,12 @@ import json
 from passive import *
 from Pweapon import *
 import streamlit as st
+import numpy as np
 
 Pcard_df = pd.ExcelFile('datas/ProduceCard_index.xlsx').parse(index_col=None)
-Scard_df = pd.ExcelFile('datas/SupportCard_index.xlsx').parse(index_col=None)
+Scard_df = pd.ExcelFile('datas/SupportCard_index.xlsx').parse(index_col=None,dtype=str)
 EX_df = pd.ExcelFile('datas/EX_index.xlsx').parse(index_col=0)
 audition_df = pd.ExcelFile('datas/Audition_index.xlsx').parse(index_col=0)
-support_df = Scard_df
 
 with open('datas/rival_move.json') as f:
     hantei_dict = json.load(f)
@@ -42,7 +42,7 @@ def get_ATK(P_ATK,weapon,week,critical,support_list,skill_history,buff_list,aim,
   #critical:判定倍率、suport_list:サポートのリスト、aim:狙い先(白札で使用)
   ATK_dict = {}
   color_list = ["Vo","Da","Vi","Ex"]
-  name = support_df["アイドル名"][weapon]
+  name = st.session_state.support_df["アイドル名"][weapon]
   link_flg = chk_link(skill_history,name)
   buff_dict = get_buff(buff_list)
   #各属性の攻撃力を計算
@@ -52,10 +52,10 @@ def get_ATK(P_ATK,weapon,week,critical,support_list,skill_history,buff_list,aim,
     #サポートのステ合計の算出
     S_status = 0
     for support in support_list:
-      S_status += support_df.at[support,"{0}_status".format(color)]
+      S_status += st.session_state.support_df.at[support,"{0}_status".format(color)]
     #攻撃力計算
-    weapon_rate = support_df.at[weapon,"{0}_rate".format(c)]
-    iS = support_df.at[weapon,"{0}_status".format(color)]
+    weapon_rate = float(st.session_state.support_df.at[weapon,"{0}_rate".format(c)])
+    iS = st.session_state.support_df.at[weapon,"{0}_status".format(color)]
     ATK =int(int(int(P_ATK[color]*0.5 + (S_status + 3*iS) * (1 + 0.1*week) * 0.2)*buff*critical) * weapon_rate)
     #リンク処理
     if link_flg:
@@ -66,8 +66,8 @@ def get_ATK(P_ATK,weapon,week,critical,support_list,skill_history,buff_list,aim,
 
     #バフの追加
     if c != "Ex" and buff_add:
-      buff = support_df['{0}_buff'.format(color)][weapon]
-      turn = support_df["{0}_buff_coT".format(color)][weapon]
+      buff = st.session_state.support_df['{0}_buff'.format(color)][weapon]
+      turn = st.session_state.support_df["{0}_buff_coT".format(color)][weapon]
       buff_pack = str(buff).split(',')
       turn_pack = str(turn).split(",")
       for (buff, turn) in zip(buff_pack, turn_pack):
@@ -86,19 +86,19 @@ def get_buff(buff_list):
     for buff_dict in buff_list:
       if buff_dict["color"] == color:
         buff += buff_dict["buff"]
-    for passive in passive_list:
+    for passive in st.session_state.game_val['passive_list']:
       if passive["color"] == color:
         buff += passive["buff"]    
     buff /=100
     buffs[color] = buff
   return buffs
 
-def choose_weapon(weapon_cnd,aim,P_ATK,week,critical,support_list,skill_history,buff_list):
+def choose_weapon(weapon_cnd,aim,P_ATK,week,critical,support_list,skill_history,buff_list,turn_num):
   buff_dict = get_buff(buff_list)
 
   #打つ順番固定のとき
-  if weapon_fix == True and weapon_list[turn_num] not in  ["*","+"]:
-    return weapon_list[turn_num]
+  if st.session_state.weapon_list[turn_num] not in  ["*","+"]:
+        return st.session_state.weapon_list[turn_num]
   #手札から選ぶとき
   else:
     if "櫻木真乃花風smiley4凸" in weapon_cnd and turn_num < 2:
@@ -110,16 +110,16 @@ def choose_weapon(weapon_cnd,aim,P_ATK,week,critical,support_list,skill_history,
       for weapon in weapon_cnd:
         #思い出攻撃力計算
         if weapon == "memory":
-          attack_type,ATK_dict = memory(Memory_lv,P_ATK,week,support_list,skill_history,buff_list)
+          attack_type,ATK_dict = memory(st.session_state.memory_lv,P_ATK,week,support_list,skill_history,buff_list)
         #自札攻撃力計算
-        elif weapon in P_weapon:
-          attack_type,ATK_dict = Pweapon_dict[weapon].get_ATK(P_ATK,week,critical,support_list,skill_history,buff_list,buff_add=False)
+        elif weapon in list(st.session_state.Pweapon_dict.keys()):
+          attack_type,ATK_dict = st.session_state.Pweapon_dict[weapon].get_ATK(P_ATK,week,critical,support_list,skill_history,buff_list,buff_add=False)
         #サポ札攻撃力計算
         else:
           attack_type,ATK_dict = get_ATK(P_ATK,weapon,week,critical,support_list,skill_history,buff_list,aim,buff_add=False)
 
         ATK = sum(ATK_dict.values()) + ATK_dict[aim]
-        if weapon_list[turn_num] == "+":
+        if st.session_state.weapon_list[turn_num] == "+":
           #全審査員に対する攻撃力計算
           tmp_dict = {"Vo":0,"Da":0,"Vi":0}
           for color in color_list:
@@ -133,35 +133,35 @@ def choose_weapon(weapon_cnd,aim,P_ATK,week,critical,support_list,skill_history,
 
 def attack(aim,P_ATK,weapon,week,critical,support_list,skill_history,buff_list):
   color_list = ["Vo","Da","Vi"]
-  if weapon in hand_weapon:
-    hand_weapon.remove(weapon)
-  weapon_hist.append(weapon)
+  if weapon in st.session_state.game_val['hand_weapon']:
+    st.session_state.game_val['hand_weapon'].remove(weapon)
+  st.session_state.game_val['weapon_hist'].append(weapon)
   #思い出攻撃力計算
   if weapon in ["memory","Memory"]:
-    attack_type,ATK_dict = memory(Memory_lv,P_ATK,week,support_list,skill_history,buff_list)
+    attack_type,ATK_dict = memory(st.session_state.memory_lv,P_ATK,week,support_list,skill_history,buff_list)
   #自札攻撃力計算
-  elif weapon in P_weapon:
-    attack_type,ATK_dict = Pweapon_dict[weapon].get_ATK(P_ATK,week,critical,support_list,skill_history,buff_list)
+  elif weapon in list(st.session_state.Pweapon_dict.keys()):
+    attack_type,ATK_dict = st.session_state.Pweapon_dict[weapon].get_ATK(P_ATK,week,critical,support_list,skill_history,buff_list)
   #サポ札攻撃力計算
   else:
     attack_type,ATK_dict = get_ATK(P_ATK,weapon,week,critical,support_list,skill_history,buff_list,aim)
 
   #単体アピール
   if attack_type == "single":
-    ATK = min(sum(ATK_dict.values()) + ATK_dict[aim],judge_dict[aim]["HP"])
-    judge_dict[aim]["HP"] -= ATK
-    score_df[aim][status["name"]] += ATK
-    all_log.append("to {0} by {1}".format(aim,ATK))
+    ATK = min(sum(ATK_dict.values()) + ATK_dict[aim],st.session_state.game_val['judge_dict'][aim]["HP"])
+    st.session_state.game_val['judge_dict'][aim]["HP"] -= ATK
+    st.session_state.game_val['score_df'][aim][st.session_state.status["name"]] += ATK
+    st.session_state.game_val['all_log'].append("to {0} by {1}".format(aim,ATK))
 
   #全体アピール
   if attack_type == "whole":
     for color in color_list:  
-      ATK = min(sum(ATK_dict.values()) + ATK_dict[color],judge_dict[color]["HP"])
-      all_log.append("to {0} by {1}".format(color,ATK))
-      judge_dict[color]["HP"] -= ATK
-      score_df[color][status["name"]] += ATK
-  if weapon!="memory"and not weapon_fix:
-    all_weapon.remove(weapon)
+      ATK = min(sum(ATK_dict.values()) + ATK_dict[color],st.session_state.game_val['judge_dict'][color]["HP"])
+      st.session_state.game_val['all_log'].append("to {0} by {1}".format(color,ATK))
+      st.session_state.game_val['judge_dict'][color]["HP"] -= ATK
+      st.session_state.game_val['score_df'][color][st.session_state.status["name"]] += ATK
+  if weapon!="memory":
+    st.session_state.game_config['all_weapon'].remove(weapon)
 
 def initialize(audition_name):
   #オーディションの初期化
@@ -233,49 +233,49 @@ def rival_aim(rival,trend,turn):
     while(aim_flg):
       #i:殴り先の流行順位
       i = int(rival['sequence'][cnd])
-      if judge_dict[trend[i-1]]["HP"]>0:
+      if st.session_state.game_val['judge_dict'][trend[i-1]]["HP"]>0:
         aim = trend[i-1]
         aim_flg = False
       else:
         cnd += 1
   if rival["type"] == "t":
     aim_flg = True
-    cnd = turn + rival_list[ord(idol)-ord("A")]["memory_flg"]
+    cnd = turn + st.session_state.game_config['rival_list'][ord(rival["name"])-ord("A")]["memory_flg"]
     sequence = rival['sequence']
     while(aim_flg):
       aim = trend[int(sequence[cnd%3])-1]
-      if judge_dict[aim]["HP"]>0:
+      if st.session_state.game_val['judge_dict'][aim]["HP"]>0:
         aim_flg = False
       else:
         cnd += 1
   return aim
 
-def own_aim(designate=False):
+def own_aim(turn_num,designate=False):
   if designate:
-    return aim_list[turn_num]
+    return st.session_state.aim_list[turn_num]
   else:
-    for aim_cnd in aim_list:
-      if judge_dict[aim_cnd]["exist_flg"]:
+    for aim_cnd in st.session_state.aim_list:
+      if st.session_state.game_val['judge_dict'][aim_cnd]["exist_flg"]:
         return aim_cnd
 
-def buff_turn_process(buff_list):
+def buff_turn_process(buff_list,turn_num):
   #パッシブ判定に渡す盤面情報
-  situation = {"status":status,
-              "support_df":support_df,
+  situation = {"status":st.session_state.status,
+              "support_df":st.session_state.support_df,
               "buff_list":buff_list,
-              "score_df":score_df,
-              "judge_dict":judge_dict,
-              "rival_list":rival_list,
+              "score_df":st.session_state.game_val['score_df'],
+              "judge_dict":st.session_state.game_val['judge_dict'],
+              "rival_list":st.session_state.game_config['rival_list'],
               "turn":turn_num,
-              "skill_history":skill_history,
-               "passive_list":passive_list
+              "skill_history":st.session_state.game_val['skill_history'],
+               "passive_list":st.session_state.game_val['passive_list']
               }
   #ターン開始時の処理
   #前ターンのパッシブスキルの消去
-  passive_list.clear()
+  st.session_state.game_val['passive_list'].clear()
   #パッシブスキルを泣かせる
-  for key,passive in passive_dict.items():
-    passive.add_passive(situation,passive_list)
+  for key,passive in st.session_state.game_config['passive_dict'].items():
+    passive.add_passive(situation,st.session_state.game_val['passive_list'])
 
   #バフターンを1小さくして0ならリストから消去
   remove_list = []
@@ -291,10 +291,10 @@ def buff_turn_process(buff_list):
     buff_list.remove(buff_dict)
 
   #手札が2枚なら補充
-  if len(set(hand_weapon)-{"memory"}) < 3:
-    hand_weapon.append(random.choice(list(set(all_weapon)-set(hand_weapon)-set(weapon_hist))))
+  if len(set(st.session_state.game_val['hand_weapon'])-{"memory"}) < 3:
+    st.session_state.game_val['hand_weapon'].append(random.choice(list(set(st.session_state.game_config['all_weapon'])-set(st.session_state.game_val['hand_weapon'])-set(st.session_state.game_val['weapon_hist']))))
   if turn_num == 2:
-    hand_weapon.append("memory")
+    st.session_state.game_val['hand_weapon'].append("memory")
 
 
 def end_chk(idol):
@@ -304,11 +304,11 @@ def end_chk(idol):
   colors = ["Vo","Da","Vi"]
   #LAの確認
   for color in colors:
-    if judge_dict[color]["exist_flg"] and judge_dict[color]["HP"] <= 0:
-      judge_dict[color]["exist_flg"] = False
-      LA_dict[color] = idol["name"]
-      judge_dict[color]["HP"] = 0
-    extict_flg = extict_flg or judge_dict[color]["exist_flg"]
+    if st.session_state.game_val['judge_dict'][color]["exist_flg"] and st.session_state.game_val['judge_dict'][color]["HP"] <= 0:
+      st.session_state.game_val['judge_dict'][color]["exist_flg"] = False
+      st.session_state.game_val['LA_dict'][color] = idol["name"]
+      st.session_state.game_val['judge_dict'][color]["HP"] = 0
+    extict_flg = extict_flg or st.session_state.game_val['judge_dict'][color]["exist_flg"]
   if not extict_flg:
     contenue_flg = False
   return contenue_flg
@@ -316,7 +316,7 @@ def end_chk(idol):
 def memory(lv,P_ATK,week,support_list,skill_history,buff_list):
   rate_list = [0,0.8,1.0,1.2,1.4,2.0]
   rate = rate_list[lv]
-  flg = chk_link(skill_history,status["P_idol"])
+  flg = chk_link(skill_history,st.session_state.status["P_idol"])
   ATK_dict={}
   buff_dict = get_buff(buff_list)
   for color in color_list:
@@ -324,7 +324,7 @@ def memory(lv,P_ATK,week,support_list,skill_history,buff_list):
     #サポートのステ合計の算出
     S_status = 0
     for support in support_list:
-      S_status += support_df.at[support,"{0}_status".format(color)]
+      S_status += st.session_state.support_df.at[support,"{0}_status".format(color)]
     #攻撃力計算
     ATK = int(int(int(P_ATK[color]*2 + S_status * 0.2 * (1 + 0.1*week)) * buff*1.5 )*rate)
     ATK_dict[color]=ATK
@@ -335,8 +335,8 @@ def get_order(turn_num,critical,weapon):
   if weapon == "memory":
     tmp_dict["Myunit"] = 5
   else: tmp_dict["Myunit"] = critical + 0.1
-  for rival in rival_list:
-    tmp_dict[rival["name"]] = critical_dict[rival_critical[rival["name"]][str(turn_num+1)+"T"]] + ord(rival["name"]) * 0.001
+  for rival in st.session_state.game_config['rival_list']:
+    tmp_dict[rival["name"]] = critical_dict[st.session_state.game_config['rival_critical'][rival["name"]][str(turn_num+1)+"T"]] + ord(rival["name"]) * 0.001
   Series= pd.Series(tmp_dict).sort_values(ascending=False)
   return(Series.index.tolist())
 
@@ -345,64 +345,69 @@ def get_order(turn_num,critical,weapon):
 def one_turn_process(turn_num,critical,continue_flg):
   #1ターンの処理 turn_numは0からスタート
   #バフのターン数を1つ小さくする
-  buff_turn_process(buff_list)
-  log.append("{0}ターン目".format(turn_num+1))
-  all_log.append("{0}ターン目".format(turn_num+1))
-  log.append(show_buff_list(buff_list))
-  log.append(show_passive_list(passive_list))
-  log.append("HAND: {0}".format(", ".join(hand_weapon)))
-  all_log.append("buff")
-  if len(aim_list) == 3:
+  buff_turn_process(st.session_state.game_val['buff_list'],turn_num)
+  st.session_state.game_val['log'].append("{0}ターン目".format(turn_num+1))
+  st.session_state.game_val['all_log'].append("{0}ターン目".format(turn_num+1))
+  st.session_state.game_val['log'].append(show_buff_list(st.session_state.game_val['buff_list']))
+  st.session_state.game_val['log'].append(show_passive_list(st.session_state.game_val['passive_list']))
+  st.session_state.game_val['log'].append("HAND: {0}".format(", ".join(st.session_state.game_val['hand_weapon'])))
+  st.session_state.game_val['all_log'].append("buff")
+  if len(st.session_state.aim_list) == 3:
     designate = False
   else:
     designate = True
 
   #自分の攻撃
-  aim = own_aim(designate)
-  weapon = choose_weapon(hand_weapon,aim,status,week,critical,support_list,skill_history,buff_list)
+  hand_weapon = st.session_state.game_val['hand_weapon']
+  status = st.session_state.status
+  week = st.session_state.week
+
+  aim = own_aim(turn_num,designate)
+  weapon = choose_weapon(hand_weapon,aim,status,week,critical,st.session_state.support_list,st.session_state.game_val['skill_history'],st.session_state.game_val['buff_list'],turn_num)
   order_list = get_order(turn_num,critical,weapon)
   for idol in order_list:
     if idol == "Myunit":
-      attack(aim,status,weapon,week,critical,support_list,skill_history,buff_list)
-      log.append(weapon+"Apeal!")
-      all_log.append(weapon+"Apeal!")
+      attack(aim,status,weapon,week,critical,st.session_state.support_list,st.session_state.game_val['skill_history'],st.session_state.game_val['buff_list'])
+      st.session_state.game_val['log'].append(weapon+"Apeal!")
+      st.session_state.game_val['all_log'].append(weapon+"Apeal!")
       continue_flg = end_chk(status)
       if not continue_flg:
         return continue_flg
-      all_log.extend(show_judge(judge_dict))
-      log.append("=========================")
+      st.session_state.game_val['all_log'].extend(show_judge(st.session_state.game_val['judge_dict']))
+      st.session_state.game_val['log'].append("=========================")
 
     #ライバルの攻撃
     else:
-      rival = [k for k in rival_list if idol == k["name"]][0]
-      aim = rival_aim(rival,trend,turn_num)
-      base_ATK = int(rival["base_ATK"] * mys_rate())
+      rival = [k for k in st.session_state.game_config['rival_list'] if idol == k["name"]][0]
+      aim = rival_aim(rival,st.session_state.trend,turn_num)
+      base_ATK = int(rival["base_ATK"] * mys_rate(turn_num))
       #ライバルの思い出アピール
-      if rival_critical[idol][str(turn_num+1)+"T"] == "m":
+      if st.session_state.game_config['rival_critical'][idol][str(turn_num+1)+"T"] == "m":
         for color in color_list:
-          ATK = min(rival["memory_ATK"],judge_dict[color]["HP"])
-          judge_dict[color]["HP"] -= ATK
-          score_df[color][rival["name"]] += ATK
-          rival_list[ord(idol)-ord("A")]["memory_flg"]
-        all_log.append("rival {0} Memory Apeal by {1} ".format(rival["name"],ATK))
+          ATK = min(rival["memory_ATK"],st.session_state.game_val['judge_dict'][color]["HP"])
+          st.session_state.game_val['judge_dict'][color]["HP"] -= ATK
+          st.session_state.game_val['score_df'][color][rival["name"]] += ATK
+          st.session_state.game_config['rival_list'][ord(idol)-ord("A")]["memory_flg"]
+        st.session_state.game_val['all_log'].append("rival {0} Memory Apeal by {1} ".format(rival["name"],ATK))
       #通常攻撃
       else:
         if aim==rival["color"]:
           base_ATK *= 2
-        critical = critical_dict[rival_critical[rival["name"]][str(turn_num+1)+"T"]]
+        critical = critical_dict[st.session_state.game_config['rival_critical'][rival["name"]][str(turn_num+1)+"T"]]
         buff = 1
-        ATK = min(int(base_ATK * critical * buff),judge_dict[aim]["HP"])
-        judge_dict[aim]["HP"] -= ATK
-        score_df[aim][rival["name"]] += ATK
-        all_log.append("rival {0} {1}Apeal on {2} by {3} ".format(rival["name"],appeal_name[critical],aim,ATK))
+        ATK = min(int(base_ATK * critical * buff),st.session_state.game_val['judge_dict'][aim]["HP"])
+        st.session_state.game_val['judge_dict'][aim]["HP"] -= ATK
+        st.session_state.game_val['score_df'][aim][rival["name"]] += ATK
+        st.session_state.game_val['all_log'].append("rival {0} {1}Apeal on {2} by {3} ".format(rival["name"],appeal_name[critical],aim,ATK))
       continue_flg = end_chk(rival)
       if not continue_flg:
         return continue_flg
-      all_log.extend(show_judge(judge_dict))
-      all_log.append("------------------------------")
+      st.session_state.game_val['all_log'].extend(show_judge(st.session_state.game_val['judge_dict']))
+      st.session_state.game_val['all_log'].append("------------------------------")
   return continue_flg
 
-def cal_result():
+def cal_result(score,trend,judge_dict,LA_dict):
+  score_df = score
   LA_point = [8,6,4]
   TA_point = [20,15,10]
   three_rate = [4,3,2]
@@ -410,7 +415,8 @@ def cal_result():
     #TAの計算
     score_df["star"][score_df.idxmax()[color]] += TA_point[i]
     #LAの計算
-    score_df["star"][LA_dict[color]] += LA_point[i]
+    if color in LA_dict.keys():
+      score_df["star"][LA_dict[color]] += LA_point[i]
     #3割星の計算
     for idol in score_df.index:
       if score_df[color][idol] > judge_dict[color]["MAX_HP"] * 0.3:
@@ -419,10 +425,12 @@ def cal_result():
         score_df["star"][idol] += three_rate[i]
       if score_df[color][idol] > judge_dict[color]["MAX_HP"] * 0.9:
         score_df["star"][idol] += three_rate[i]
+  return score_df
 
 def get_rival_critical():
   #判定を決める
   rival_mamory = {}
+  idol_list = ["A","B","C","D","E"]
   for idol in idol_list:
     #思い出ターン決定
     rival_hantei_dict = hantei_dict[idol]
@@ -447,16 +455,16 @@ def get_rival_critical():
   return rival_critical
 
 #謎バフ倍率
-def mys_rate():
+def mys_rate(turn_num):
   p = 0.4
   r = random.random()
   if turn_num<3 or r > p:
     return 1.0
-  elif audition_name == "歌姫楽宴":
-    all_log.append("(謎バフ)")
+  elif st.session_state.audition_name == "歌姫楽宴":
+    st.session_state.game_val['all_log'].append("(謎バフ)")
     return 1.33
   else: 
-    all_log.append("(謎バフ)")
+    st.session_state.game_val['all_log'].append("(謎バフ)")
     return 1.25
     
 
@@ -495,79 +503,70 @@ def sumilate():
     aim_list = st.session_state.aim_list
     audition_name = st.session_state.audition_name
     critical_list = st.session_state.critical_list
+    trend = st.session_state.trend
     itr_num = 1000
 
     Pcard_df = pd.ExcelFile('datas/ProduceCard_index.xlsx').parse(index_col=None)
-    support_df = pd.ExcelFile('datas/SupportCard_index.xlsx').parse(index_col=None)
+    support_df = pd.ExcelFile('datas/SupportCard_index.xlsx').parse(index_col=None,dtype=str).set_index('検索キー')
     EX_df = pd.ExcelFile('datas/EX_index.xlsx').parse(index_col=0)
     audition_df = pd.ExcelFile('datas/Audition_index.xlsx').parse(index_col=0)
   
 
     result_list = [0,0,0,0,0,0]
     defeat18_num = 0
-    return support_df
     support_df = support_df.loc[support_list]
-    support_df.replace("",0,inplace=True)
+    support_df = support_df.fillna(0)
     for support in support_list:
         for color in color_list:
-            support_df.at[support,color+"_status"] += EX_dict[support][color]
-
+            support_df.at[support,color+"_status"] = int(support_df.at[support,color+"_status"])+EX_dict[support][color]
+    st.session_state.support_df = support_df
     print("simurating")
     for i in range(itr_num):
-        all_weapon = support_list + P_weapon
-        hand_weapon = random.sample(all_weapon,3)
-        weapon_hist = []
-        passive_dict = get_passive_dict(taken_passive)
-        skill_history = []
-        buff_list = []
-        passive_list = []
-        LA_dict = {}
-        score_df = pd.DataFrame({"Vo":0,"Da":0,"Vi":0,"star":0},
-                                index=["Myunit","A","B","C","D","E"])
-        judge_dict,rival_list = initialize(audition_name)
-        Vo_judge_status,Da_judge_status,Vi_judge_status = judge_dict["Vo"],judge_dict["Da"],judge_dict["Vi"]
+        st.session_state.game_config = {
+          'all_weapon':support_list + P_weapon, #選べる全アピール
+          'passive_dict':get_passive_dict(taken_passive), #全パッシブ
+          'rival_list' :initialize(audition_name)[1], #対面の情報
+          'rival_critical':get_rival_critical() #対面の判定
+        }
+        st.session_state.game_val = {
+          'hand_weapon':random.sample(st.session_state.game_config['all_weapon'],3), #手札
+          'buff_list' :[], #今鳴いているバフ
+          'passive_list':[], #今鳴いているパッシブ
+          'skill_history':[], #今まで打った札(アイドル)の履歴
+          'weapon_hist':[], #今まで打った札名の履歴
+          'LA_dict':{}, #誰がLAをとったかの情報
+          'score_df':pd.DataFrame(np.zeros([6,4]),
+                                index=["Myunit","A","B","C","D","E"],
+                                columns=['Vo','Da','Vi','star']),  #星の取得情報
+          'judge_dict' : initialize(audition_name)[0], #審査員情報
+          'log':[],
+          'all_log':[],
+        }
         turn_num = 0
-        rival_critical = get_rival_critical()
-
-        return judge_dict,rival_critical
-
-        #フェス1回分のシュミレーション
-        log = []
-        all_log = []
         continue_flg = True
+        #フェス1回分のシュミレーション
         while(continue_flg):
             continue_flg = one_turn_process(turn_num,critical_list[turn_num],continue_flg)
             turn_num += 1
             if turn_num > 4:
                 continue_flg = False
-        cal_result()
-        log.append("======================")
-        if "Myunit" in score_df.sort_values("star",ascending=False).index[0:2]:
-            log.append("{0}ターン締め".format(turn_num))
-            log_path = output_path+"/{0}turn_finish".format(turn_num)
+        st.session_state.game_val['score_df'] = cal_result(st.session_state.game_val['score_df'],trend,st.session_state.game_val['judge_dict'],st.session_state.game_val['LA_dict'])
+        st.session_state.game_val['log'].append("======================")
+        if "Myunit" in st.session_state.game_val['score_df'].sort_values("star",ascending=False).index[0:2]:
+            st.session_state.game_val['log'].append("{0}ターン締め".format(turn_num))
             result_list[turn_num-1] += 1
         else:
-            log.append("敗退")
-            log_path = output_path+"/defeated"
+            st.session_state.game_val['log'].append("敗退")
             result_list[-1] += 1
-            if score_df["star"]["Myunit"] >= 13:
+            if st.session_state.game_val['score_df']["star"]["Myunit"] >= 13:
                 defeat18_num += 1
 
-        #ログ出力
-        if log_flg:
-            f = open(log_path+"/{0}.txt".format(i), 'w')
-            log.append("")
-            log.extend(all_log)
-            massage = '\n'.join(log)
-            f.write(massage+"\n\n"+str(score_df))
-            f.close
-
-    print("\n"+audition_name)
-    print("流行"+''.join(trend))
+    ret_dict = {}
     for i,num in enumerate(result_list):
         if i<len(result_list)-1:
-            print("{0}ターン締め:{1}%".format(i+1,100*num/itr_num))
+            ret_dict[f"{i+1}ターン締め"] = f"{100*num/itr_num}%"
         else:
-            print("敗退:{0}%".format(100*num/itr_num))
-        print("(18負け:{0}%)".format(100*defeat18_num/itr_num))
+              ret_dict['敗退'] = f"{100*num/itr_num}%"
+        ret_dict["18負け"] = f'{100*defeat18_num/itr_num}%'
+    return ret_dict
 # %%

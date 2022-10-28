@@ -78,7 +78,7 @@ with st.form(key = 'sim_info'):
             )
             weapon_list[i] = st.selectbox(
                 '札',
-                list(st.session_state.Pweapon_dict.keys())+st.session_state.support_list+['おまかせ'],
+                ['おまかせ','memory']+list(st.session_state.Pweapon_dict.keys())+st.session_state.support_list,
                 key = f'weapon{i}'
             )
             
@@ -90,7 +90,7 @@ with st.form(key = 'sim_info'):
         st.session_state.trend = [trend[x:x+2] for x in range(0, len(trend), 2)]
         st.session_state.aim_list = aim_list
         st.session_state.weapon_list = ['*' if x == 'おまかせ' else x for x in weapon_list]
-        st.session_state.critical_list = [critical_dict[x] for x in critical_list]
+        st.session_state.critical_list = [critical_full_name_dict[x] for x in critical_list]
         st.write(sumilate())
 
 # %%
