@@ -29,10 +29,10 @@ from Pweapon import *
 import streamlit as st
 import numpy as np
 
-Pcard_df = pd.ExcelFile('datas/ProduceCard_index.xlsx').parse(index_col=None)
-Scard_df = pd.ExcelFile('datas/SupportCard_index.xlsx').parse(index_col=None,dtype=str)
-EX_df = pd.ExcelFile('datas/EX_index.xlsx').parse(index_col=0)
-audition_df = pd.ExcelFile('datas/Audition_index.xlsx').parse(index_col=0)
+Pcard_df = pd.read_csv('datas/ProduceCard_index.csv',index_col=0,encoding="shift-jis")
+Scard_df = pd.read_csv('datas/SupportCard_index.csv',index_col=None,encoding="shift-jis")
+EX_df = pd.read_csv('datas/EX_index.csv',index_col=0,encoding="shift-jis")
+audition_df = pd.read_csv('datas/Audition_index.csv',index_col=0,encoding="shift-jis")
 
 with open('datas/rival_move.json') as f:
     hantei_dict = json.load(f)
@@ -68,11 +68,11 @@ def get_ATK(P_ATK,weapon,week,critical,support_list,skill_history,buff_list,aim,
     if c != "Ex" and buff_add:
       buff = st.session_state.support_df['{0}_buff'.format(color)][weapon]
       turn = st.session_state.support_df["{0}_buff_coT".format(color)][weapon]
-      buff_pack = str(buff).split(',')
-      turn_pack = str(turn).split(",")
+      buff_pack = str(buff).split('&')
+      turn_pack = str(turn).split("&")
       for (buff, turn) in zip(buff_pack, turn_pack):
-        if int(buff)!=0:
-          buff_list.append({"color":color,"buff":int(buff),"turn":int(turn),"name":weapon,"fanc":None})
+        if int(float(buff))!=0:
+          buff_list.append({"color":color,"buff":int(float(buff)),"turn":int(float(turn)),"name":weapon,"fanc":None})
   ATK_dict[aim] += ATK_dict["Ex"]
   del ATK_dict["Ex"]
   
@@ -504,24 +504,16 @@ def sumilate():
     itr_num = 1000
     '''
   #data_input
-    status = st.session_state.status
     support_list = st.session_state.support_list
     P_weapon = list(st.session_state.Pweapon_dict.keys())
     taken_passive = st.session_state.passive_list
     EX_dict = st.session_state.EX_dict
-    weapon_list = st.session_state.weapon_list
-    week = st.session_state.week
-    Memory_lv = st.session_state.memory_lv
-    aim_list = st.session_state.aim_list
     audition_name = st.session_state.audition_name
     critical_list = st.session_state.critical_list
     trend = st.session_state.trend
     itr_num = 1000
-
-    Pcard_df = pd.ExcelFile('datas/ProduceCard_index.xlsx').parse(index_col=None)
-    support_df = pd.ExcelFile('datas/SupportCard_index.xlsx').parse(index_col=None,dtype=str).set_index('検索キー')
-    EX_df = pd.ExcelFile('datas/EX_index.xlsx').parse(index_col=0)
-    audition_df = pd.ExcelFile('datas/Audition_index.xlsx').parse(index_col=0)
+    
+    support_df = pd.read_csv('datas/SupportCard_index.csv',index_col=None,encoding="shift-jis").set_index('検索キー')
   
     log_dict = {
       '1ターン締め':[],

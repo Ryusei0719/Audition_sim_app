@@ -1,7 +1,6 @@
 from turtle import textinput
 import streamlit as st
 from func import *
-import matplotlib.pyplot as plt
 
 st.header('シュミレーション')
 st.text('札回しを選択してシュミレーションします')

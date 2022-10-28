@@ -202,7 +202,7 @@ with tab1:
     with cl2:
         add_btn = st.button("札内容を登録")
         if add_btn:
-            if len(st.session_state.get_weapon_list)<5:
+            if len(st.session_state.get_weapon_list)<4:
                 st.session_state.get_weapon_list.append(weapon)
                 st.session_state.Pweapon_dict[weapon._idol+weapon._name]=weapon
             else:
@@ -224,7 +224,7 @@ with tab2:
             weapon._idol = st.session_state.Pidol_name
     add_btn = st.button("札内容を登録",key='addFromDB')
     if add_btn:
-        if len(st.session_state.get_weapon_list)<5:
+        if len(st.session_state.get_weapon_list)<4:
             st.session_state.get_weapon_list.append(weapon)
             st.session_state.Pweapon_dict[weapon._idol+weapon._name]=weapon
         else:
