@@ -13,14 +13,14 @@ class Passive_template:
 
     def add_passive(self,situation,passive_list):
         if self._times >0:
-            Pup = 0
-        for buff in situation["buff_list"]:
-            if buff["color"] == "PASSIVEpr":
-                Pup += buff["buff"]
-        if self._request(situation,self._args) and random.random()<((self._p + Pup)/100):
-            self._times -= 1
-            for buff in self._buffs:
-                passive_list.append({"color":buff[0],"buff":int(buff[1]),"name":self._name})
+          Pup = 0
+          for buff in situation["buff_list"]:
+              if buff["color"] == "PASSIVEpr":
+                  Pup += buff["buff"]
+          if self._request(situation,self._args) and random.random()<((self._p + Pup)/100):
+              self._times -= 1
+              for buff in self._buffs:
+                  passive_list.append({"color":buff[0],"buff":int(buff[1]),"name":self._name})
                 
     def get_text(self):
       txt = self._name + '\n'
