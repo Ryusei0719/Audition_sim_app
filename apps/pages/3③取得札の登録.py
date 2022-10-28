@@ -18,11 +18,11 @@ st.session_state.Pidol_index = '花風smiley'
 st.session_state.Scard_index = ['水面を仰いで海の底', '反撃の狼煙をあげよ！', 'kimagure全力ビート！', 'こころ、えんにならんで']
 if 'weapon_info' not in st.session_state:
     st.session_state.weapon_info = info_init()
-if 'weapon_list' not in st.session_state:
-    st.session_state.weapon_list = []
 
-if 'weapon_dict' not in st.session_state:
-    st.session_state.weapon_dict= {}
+if 'Pweapon_dict' not in st.session_state:
+    st.session_state.Pweapon_dict= {}
+    
+st.session_state.get_weapon_list = list(st.session_state.Pweapon_dict.values())
 
 
 tab1, tab2 = st.tabs(["札情報を自分で入力する", "データベース内の札を使用する"])
@@ -202,9 +202,9 @@ with tab1:
     with cl2:
         add_btn = st.button("札内容を登録")
         if add_btn:
-            if len(st.session_state.weapon_list)<5:
-                st.session_state.weapon_list.append(weapon)
-                st.session_state.weapon_dict[weapon._idol+weapon._name]=weapon
+            if len(st.session_state.get_weapon_list)<5:
+                st.session_state.get_weapon_list.append(weapon)
+                st.session_state.Pweapon_dict[weapon._idol+weapon._name]=weapon
             else:
                 st.warning('既に4つ札が登録されています', icon="⚠️")
 
@@ -224,9 +224,9 @@ with tab2:
             weapon._idol = st.session_state.Pidol_name
     add_btn = st.button("札内容を登録",key='addFromDB')
     if add_btn:
-        if len(st.session_state.weapon_list)<5:
-            st.session_state.weapon_list.append(weapon)
-            st.session_state.weapon_dict[weapon._idol+weapon._name]=weapon
+        if len(st.session_state.get_weapon_list)<5:
+            st.session_state.get_weapon_list.append(weapon)
+            st.session_state.Pweapon_dict[weapon._idol+weapon._name]=weapon
         else:
             st.warning('既に4つ札が登録されています', icon="⚠️")
 
@@ -235,19 +235,19 @@ with tab2:
 
 st.markdown('***')
 st.subheader('登録されている札')
-for i,weapon in enumerate(st.session_state.weapon_list):
+for i,weapon in enumerate(st.session_state.get_weapon_list):
     st.text(str(i+1)+' : '+weapon._name)
-    st.text(weapon.get_text())
+    st.caption(weapon.get_text())
 
 
 clear_weapon = st.selectbox(
     '札を消去する',
-    st.session_state.weapon_dict.keys()
+    st.session_state.Pweapon_dict.keys()
 )
 clear_weapon_btn = st.button("消去")
-if clear_weapon_btn and len(st.session_state.weapon_list)>0:
-    st.session_state.weapon_list.remove(st.session_state.weapon_dict[clear_weapon])
-    del st.session_state.weapon_dict[clear_weapon]
+if clear_weapon_btn and len(st.session_state.get_weapon_list)>0:
+    st.session_state.get_weapon_list.remove(st.session_state.Pweapon_dict[clear_weapon])
+    del st.session_state.Pweapon_dict[clear_weapon]
 next_btn = st.button("この札で次に進む")
 
 

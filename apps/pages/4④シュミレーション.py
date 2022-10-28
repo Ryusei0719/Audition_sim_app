@@ -1,7 +1,7 @@
 from turtle import textinput
 import streamlit as st
 from func import *
-import main
+import matplotlib.pyplot as plt
 
 st.header('シュミレーション')
 st.text('札回しを選択してシュミレーションします')
@@ -44,6 +44,7 @@ with st.form(key = 'sim_info'):
         status['Vo'] = st.number_input(
             label='Vo',
             value = 500,
+            step = 10,
             key = 'Vo_status'
         )
         
@@ -51,12 +52,14 @@ with st.form(key = 'sim_info'):
         status['Da'] = st.number_input(
             label='Da',
             value = 500,
+            step = 10,
             key = 'Da_status'
         )
     with col3:
         status['Vi'] = st.number_input(
             label='Vi',
             value = 500,
+            step = 10,
             key = 'Vi_status'
         )       
     
@@ -85,12 +88,19 @@ with st.form(key = 'sim_info'):
     sim_btn = st.form_submit_button('シュミレーション開始')
     
     if sim_btn:
-        st.text('シュミレーション中')
         st.session_state.status = status
         st.session_state.trend = [trend[x:x+2] for x in range(0, len(trend), 2)]
         st.session_state.aim_list = aim_list
         st.session_state.weapon_list = ['*' if x == 'おまかせ' else x for x in weapon_list]
         st.session_state.critical_list = [critical_full_name_dict[x] for x in critical_list]
-        st.write(sumilate())
+        finish_flg = False
+        with st.spinner('シュミレーション中'):
+            out = sumilate()
+            finish_flg = True
+        
+        if finish_flg:
+            st.subheader('シュミレーション結果')
+            for key,val in out.items():
+                st.text(key+':'+val)
 
 # %%

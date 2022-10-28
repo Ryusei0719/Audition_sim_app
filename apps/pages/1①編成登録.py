@@ -84,6 +84,5 @@ if submit_btn:
     st.session_state.EX_dict = EX_dict
     st.session_state.Scard_index = Sidol_card_list
     st.session_state.Sidol_name_list = Sidol_name_list
-    st.text(st.session_state.Sidol_name_list)
 
     

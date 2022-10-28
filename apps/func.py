@@ -251,8 +251,20 @@ def rival_aim(rival,trend,turn):
   return aim
 
 def own_aim(turn_num,designate=False):
+      #ターン毎に殴り先を指定する場合
+  tmp_list = ["Vo","Da","Vi"]
   if designate:
-    return st.session_state.aim_list[turn_num]
+    aim = st.session_state.aim_list[turn_num]
+    flg = True
+    while(flg):
+      if st.session_state.game_val['judge_dict'][aim]["HP"]>0:
+        flg = False
+        return aim
+      else:
+         tmp_list.remove(aim)
+         aim = tmp_list[0]
+    return aim
+  #１属性にスピアする場合
   else:
     for aim_cnd in st.session_state.aim_list:
       if st.session_state.game_val['judge_dict'][aim_cnd]["exist_flg"]:
@@ -511,7 +523,15 @@ def sumilate():
     EX_df = pd.ExcelFile('datas/EX_index.xlsx').parse(index_col=0)
     audition_df = pd.ExcelFile('datas/Audition_index.xlsx').parse(index_col=0)
   
-
+    log_dict = {
+      '1ターン締め':[],
+      '2ターン締め':[],
+      '3ターン締め':[],
+      '4ターン締め':[],
+      '5ターン締め':[],
+      '敗退':[],
+      '18負け':[]
+    }
     result_list = [0,0,0,0,0,0]
     defeat18_num = 0
     support_df = support_df.loc[support_list]
@@ -552,15 +572,26 @@ def sumilate():
                 continue_flg = False
         st.session_state.game_val['score_df'] = cal_result(st.session_state.game_val['score_df'],trend,st.session_state.game_val['judge_dict'],st.session_state.game_val['LA_dict'])
         st.session_state.game_val['log'].append("======================")
-        if "Myunit" in st.session_state.game_val['score_df'].sort_values("star",ascending=False).index[0:2]:
+        
+        log = st.session_state.game_val['log']
+        log.extend(st.session_state.game_val['all_log'])
+        log.append("======================\n\n")
+        log.append(str(st.session_state.game_val['score_df'])) 
+        message = '\n'.join(log)
+        
+        if "Myunit" in st.session_state.game_val['score_df'].sort_values("star",ascending=False).index[0:2].to_list() and turn_num<5:
             st.session_state.game_val['log'].append("{0}ターン締め".format(turn_num))
             result_list[turn_num-1] += 1
+            log_dict[f'{turn_num}ターン締め'].append(message)
         else:
             st.session_state.game_val['log'].append("敗退")
             result_list[-1] += 1
-            if st.session_state.game_val['score_df']["star"]["Myunit"] >= 13:
+            log_dict['敗退'].append(message)
+            if st.session_state.game_val['score_df']["star"]["Myunit"] >= 13 and turn_num<5:
                 defeat18_num += 1
-
+                log_dict['18負け'].append(message)
+                
+    st.session_state.simulate_log = log_dict
     ret_dict = {}
     for i,num in enumerate(result_list):
         if i<len(result_list)-1:
