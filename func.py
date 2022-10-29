@@ -327,10 +327,6 @@ def buff_turn_process(buff_list,turn_num):
 
   #手札が2枚なら補充
   if len(set(st.session_state.game_val['hand_weapon'])-{"memory"}) < 3:
-    st.write(st.session_state.game_config['all_weapon'])
-    st.write(st.session_state.game_val['hand_weapon'])
-    st.write(st.session_state.game_val['weapon_hist'])
-  
     st.session_state.game_val['hand_weapon'].append(random.choice(list(set(st.session_state.game_config['all_weapon'])-set(st.session_state.game_val['hand_weapon'])-set(st.session_state.game_val['weapon_hist']))))
   if turn_num == 2:
     st.session_state.game_val['hand_weapon'].append("memory")
