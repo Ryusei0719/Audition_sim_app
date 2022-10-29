@@ -113,15 +113,16 @@ with tab2:
         '登録されているパッシブから選択する',
         passive_candidate
     )
-    passive  = all_passive_dict[passive_name]
-    
-    st.markdown("***")
-    st.subheader('パッシブ内容')
-    st.text(passive.get_text())
-    regist = st.button('このパッシブを登録する',key = 'templete_pasive_regi')
-    if regist:
-        passive_list.append(passive_name)
-        passive_dict[passive_name]=passive
+    if passive_name in all_passive_dict.keys():
+        passive = all_passive_dict[passive_name]
+        
+        st.markdown("***")
+        st.subheader('パッシブ内容')
+        st.text(passive.get_text())
+        regist = st.button('このパッシブを登録する',key = 'templete_pasive_regi')
+        if regist:
+            passive_list.append(passive_name)
+            passive_dict[passive_name]=passive
         
 st.markdown("***")
 st.subheader('登録されているパッシブスキル')
