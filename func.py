@@ -277,8 +277,7 @@ def own_aim(turn_num,designate=False):
   tmp_list = ["Vo","Da","Vi"]
   if designate:
     aim = st.session_state.aim_list[turn_num]
-    st.write(st.session_state.aim_list[turn_num])
-    st.write('aim')
+    st.write(aim)
     flg = True
     while(flg):
       if st.session_state.game_val['judge_dict'][aim]["HP"]>0:
@@ -399,6 +398,7 @@ def one_turn_process(turn_num,critical,continue_flg):
   week = st.session_state.week
 
   aim = own_aim(turn_num,designate)
+  st.write(aim)
   weapon = choose_weapon(hand_weapon,aim,status,week,critical,st.session_state.support_list,st.session_state.game_val['skill_history'],st.session_state.game_val['buff_list'],turn_num)
   order_list = get_order(turn_num,critical,weapon)
   for idol in order_list:
