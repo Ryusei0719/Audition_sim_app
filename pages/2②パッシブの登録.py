@@ -6,8 +6,6 @@ from func import *
 
 st.header('パッシブの登録')
 
-st.session_state.Scard_index = ['水面を仰いで海の底', '反撃の狼煙をあげよ！', 'kimagure全力ビート！', 'こころ、えんにならんで']
-
 @st.cache(allow_output_mutation=True)
 def cache_list():
     return []
