@@ -277,7 +277,6 @@ def own_aim(turn_num,designate=False):
   tmp_list = ["Vo","Da","Vi"]
   if designate:
     aim = st.session_state.aim_list[turn_num]
-    st.write(aim)
     flg = True
     while(flg):
       if st.session_state.game_val['judge_dict'][aim]["HP"]>0:
