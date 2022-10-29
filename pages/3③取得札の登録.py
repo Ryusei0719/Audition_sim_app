@@ -200,6 +200,7 @@ with tab1:
             if len(st.session_state.get_weapon_list)<4:
                 st.session_state.get_weapon_list.append(weapon)
                 st.session_state.Pweapon_dict[weapon._idol+weapon._name]=weapon
+                st.session_state.weapon_info = info_init()
             else:
                 st.warning('既に4つ札が登録されています', icon="⚠️")
 
