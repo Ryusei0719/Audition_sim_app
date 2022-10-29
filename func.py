@@ -57,8 +57,6 @@ with open('datas/rival_move.json') as f:
     hantei_dict = json.load(f)
     
 def get_support_df():
-      st.write(support_df)
-      st.write(support_df.set_index('検索キー'))
       return support_df
 
 def get_ATK(P_ATK,weapon,week,critical,support_list,skill_history,buff_list,aim,buff_add=True):
