@@ -15,8 +15,7 @@ card_list = Pcard_df[Pcard_df['アイドル']==Pidol_name]['カード名'].tolis
 
 Pidol_index = st.selectbox(
     'カード名',
-    card_list,
-    key = 'Pidol_index'
+    card_list
 )
 
 st.markdown("***")
@@ -84,5 +83,6 @@ if submit_btn:
     st.session_state.Scard_index = Sidol_card_list
     st.session_state.Sidol_name_list = Sidol_name_list
     st.session_state.Pidol_name = Pidol_name
+    st.session_state.Pidol_index = Pidol_index
 
     
