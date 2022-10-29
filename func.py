@@ -57,7 +57,7 @@ with open('datas/rival_move.json') as f:
     hantei_dict = json.load(f)
     
 def get_support_df():
-      return support_df
+      return support_df.set_index('検索キー')
 
 def get_ATK(P_ATK,weapon,week,critical,support_list,skill_history,buff_list,aim,buff_add=True):
   #P_ATK:素のステータスdict,weapon:札の検索キー、week:経過週
@@ -548,7 +548,6 @@ def sumilate():
     }
     result_list = [0,0,0,0,0,0]
     defeat18_num = 0
-    st.write(get_support_df())
     support_df = get_support_df().loc[support_list]
     support_df = support_df.replace("",int(0))
     support_df = support_df.drop_duplicates()
