@@ -43,7 +43,7 @@ for i,col in enumerate(cols):
         
         Sidol_totu_list[i] = st.selectbox(
             '凸数',
-            ['0凸','1凸','2凸','3凸','4凸'],
+            ['4凸','3凸','2凸','1凸','0凸'],
             key = f'totu{i}'
         )
         

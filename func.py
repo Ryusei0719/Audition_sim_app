@@ -277,6 +277,8 @@ def own_aim(turn_num,designate=False):
   tmp_list = ["Vo","Da","Vi"]
   if designate:
     aim = st.session_state.aim_list[turn_num]
+    st.write(st.session_state.aim_list[turn_num])
+    st.write('aim')
     flg = True
     while(flg):
       if st.session_state.game_val['judge_dict'][aim]["HP"]>0:
@@ -577,6 +579,7 @@ def sumilate():
           'judge_dict' : initialize(audition_name)[0], #審査員情報
           'log':[],
           'all_log':[],
+          'aim_list':st.session_state.aim_list
         }
         turn_num = 0
         continue_flg = True
