@@ -533,7 +533,7 @@ def sumilate():
     EX_dict = st.session_state.EX_dict
     audition_name = st.session_state.audition_name
     critical_list = st.session_state.critical_list
-    aim_list = st.sesson_state.aim_list
+    aim_list = st.session_state.aim_list
     trend = st.session_state.trend
     itr_num = 1000
   
