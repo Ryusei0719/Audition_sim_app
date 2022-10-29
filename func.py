@@ -327,6 +327,7 @@ def buff_turn_process(buff_list,turn_num):
 
   #手札が2枚なら補充
   if len(set(st.session_state.game_val['hand_weapon'])-{"memory"}) < 3:
+    st.write(list(set(st.session_state.game_config['all_weapon'])-set(st.session_state.game_val['hand_weapon'])-set(st.session_state.game_val['weapon_hist'])))
     st.session_state.game_val['hand_weapon'].append(random.choice(list(set(st.session_state.game_config['all_weapon'])-set(st.session_state.game_val['hand_weapon'])-set(st.session_state.game_val['weapon_hist']))))
   if turn_num == 2:
     st.session_state.game_val['hand_weapon'].append("memory")
@@ -398,7 +399,6 @@ def one_turn_process(turn_num,critical,continue_flg):
   week = st.session_state.week
 
   aim = own_aim(turn_num,designate)
-  st.write(aim)
   weapon = choose_weapon(hand_weapon,aim,status,week,critical,st.session_state.support_list,st.session_state.game_val['skill_history'],st.session_state.game_val['buff_list'],turn_num)
   order_list = get_order(turn_num,critical,weapon)
   for idol in order_list:
