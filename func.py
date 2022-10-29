@@ -272,11 +272,11 @@ def rival_aim(rival,trend,turn):
         cnd += 1
   return aim
 
-def own_aim(turn_num,designate=False):
+def own_aim(turn_num,aim_list,designate=False):
       #ターン毎に殴り先を指定する場合
   tmp_list = ["Vo","Da","Vi"]
   if designate:
-    aim = st.session_state.aim_list[turn_num]
+    aim = aim_list[turn_num]
     flg = True
     while(flg):
       if st.session_state.game_val['judge_dict'][aim]["HP"]>0:
@@ -288,7 +288,7 @@ def own_aim(turn_num,designate=False):
     return aim
   #１属性にスピアする場合
   else:
-    for aim_cnd in st.session_state.aim_list:
+    for aim_cnd in aim_list:
       if st.session_state.game_val['judge_dict'][aim_cnd]["exist_flg"]:
         return aim_cnd
 
@@ -376,7 +376,7 @@ def get_order(turn_num,critical,weapon):
 
 
 
-def one_turn_process(turn_num,critical,continue_flg):
+def one_turn_process(turn_num,aim_list,critical,continue_flg):
   #1ターンの処理 turn_numは0からスタート
   #バフのターン数を1つ小さくする
   buff_turn_process(st.session_state.game_val['buff_list'],turn_num)
@@ -396,7 +396,7 @@ def one_turn_process(turn_num,critical,continue_flg):
   status = st.session_state.status
   week = st.session_state.week
 
-  aim = own_aim(turn_num,designate)
+  aim = own_aim(turn_num,aim_list,designate)
   st.write(f'{turn_num+1}t:{aim}=入力{st.session_state.aim_list[turn_num]}')
   weapon = choose_weapon(hand_weapon,aim,status,week,critical,st.session_state.support_list,st.session_state.game_val['skill_history'],st.session_state.game_val['buff_list'],turn_num)
   order_list = get_order(turn_num,critical,weapon)
@@ -533,6 +533,7 @@ def sumilate():
     EX_dict = st.session_state.EX_dict
     audition_name = st.session_state.audition_name
     critical_list = st.session_state.critical_list
+    aim_list = st.sesson_state.aim_list
     trend = st.session_state.trend
     itr_num = 1000
   
@@ -578,13 +579,12 @@ def sumilate():
           'judge_dict' : initialize(audition_name)[0], #審査員情報
           'log':[],
           'all_log':[],
-          'aim_list':st.session_state.aim_list
         }
         turn_num = 0
         continue_flg = True
         #フェス1回分のシュミレーション
         while(continue_flg):
-            continue_flg = one_turn_process(turn_num,critical_list[turn_num],continue_flg)
+            continue_flg = one_turn_process(turn_num,aim_list,critical_list[turn_num],continue_flg)
             turn_num += 1
             if turn_num > 4:
                 continue_flg = False
