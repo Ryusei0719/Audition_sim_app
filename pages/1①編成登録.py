@@ -34,7 +34,7 @@ for i,col in enumerate(cols):
             key = f'idolname{i}'
         )
        
-        card_list = set(Scard_df[Scard_df['アイドル名']==Sidol_name_list[i]]['カード名'].tolist())
+        card_list = set(support_df[support_df['アイドル名']==Sidol_name_list[i]]['カード名'].tolist())
         Sidol_card_list[i] = st.selectbox(
             'カード名',
             card_list,

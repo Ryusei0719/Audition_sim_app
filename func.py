@@ -43,12 +43,14 @@ sh = gc.open_by_key(SP_SHEET_KEY)
 SP_SHEET = 'SupportCard_index' # シート名「シート1」を指定
 worksheet = sh.worksheet(SP_SHEET)
 data = worksheet.get_all_values() # シート内の全データを取得
-df = pd.DataFrame(data[1:], columns=data[0]) # 取得したデータをデータフレームに変換
-st.table(df)
+support_df = pd.DataFrame(data[1:], columns=data[0]) # 取得したデータをデータフレームに変換
+
+SP_SHEET = 'ProduceCard_index'
+worksheet = sh.worksheet(SP_SHEET)
+data = worksheet.get_all_values() 
+Pcard_df = pd.DataFrame(data[1:], columns=data[0])
 
 
-Pcard_df = pd.read_csv('datas/ProduceCard_index.csv',index_col=0,encoding="cp932")
-Scard_df = pd.read_csv('datas/SupportCard_index.csv',index_col=None)
 EX_df = pd.read_csv('datas/EX_index.csv',index_col=0,encoding="shift-jis")
 audition_df = pd.read_csv('datas/Audition_index.csv',index_col=0,encoding="cp932")
 
@@ -530,8 +532,6 @@ def sumilate():
     critical_list = st.session_state.critical_list
     trend = st.session_state.trend
     itr_num = 1000
-    
-    support_df = pd.read_csv('datas/SupportCard_index.csv',index_col=None).set_index('検索キー')
   
     log_dict = {
       '1ターン締め':[],
