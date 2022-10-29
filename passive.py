@@ -124,7 +124,7 @@ all_passive_dict = {"花風smiley金1":Passive_template("花風金1",3,30,no_req
             "水面を仰いで海の底白":Passive_template("海白1",3,10,no_requirement,[["Da",40],["Vi",20]]),
             "反撃の狼煙をあげよ！金":Passive_template("狼煙金",3,20,after_turn_requirement,[["Vo",50],["Da",50],["Vi",50]],3),
             "反撃の狼煙をあげよ！白":Passive_template("狼煙白",3,20,before_turn_requirement,[["Vo",30],["Da",30],["Vi",30]],3),
-            "駅線上の日常金":Passive_template("駅金",3,10,after_turn_requirement,[["Da",50],["Vi",50]],3),
+            "駅線上の日常金":Passive_template("駅金",3,10,after_turn_requirement,[["Da",65],["Vi",65]],3),
             "駅線上の日常白":Passive_template("駅白",3,10,before_turn_requirement,[["Da",30],["Vi",30]],6),
             "kimagure全力ビート！金":Passive_template("バンド金",3,10,no_requirement,[["Vo",40],["Da",40],["Vi",40]]),
             "kimagure全力ビート！白":Passive_template("バンド白",3,10,no_requirement,[["Vo",25],["Da",25],["Vi",25]]),
