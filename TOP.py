@@ -50,7 +50,10 @@ if 'weapon_list' not in st.session_state:
 
 
 
-st.title('オーディションシュミレータ')
+st.title('オーディションシュミレータ(β盤)')
 st.caption('これは編成と札回しを登録することでオデの勝率をシュミレーションできるアプリです。')
+
+st.write('左のスライドバーから順番に条件を設定することで、その条件での勝率や何ターンで締まるのかをシュミレーションすることができます。')
+
 
 #st.write(st.session_state)
