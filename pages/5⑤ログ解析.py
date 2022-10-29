@@ -16,6 +16,7 @@ with st.expander("使用した編成"):
     st.text('取得した札：')
     for name,weapon in st.session_state.Pweapon_dict.items():
         st.text(name+':'+weapon.get_text())
+    st.text(st.session_state.aim_list)
 
 if 'simulate_log' not in st.session_state:
     st.text('先にシュミレーションをしてください')
