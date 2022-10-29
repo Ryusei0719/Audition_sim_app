@@ -548,6 +548,7 @@ def sumilate():
     }
     result_list = [0,0,0,0,0,0]
     defeat18_num = 0
+    st.write(get_support_df())
     support_df = get_support_df().loc[support_list]
     support_df = support_df.replace("",int(0))
     support_df = support_df.drop_duplicates()
