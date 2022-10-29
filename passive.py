@@ -1,4 +1,6 @@
 import random
+import func
+
 class Passive_template:
     #name:バフ名,times:鳴く回数(最大),p:条件を満たしたときに鳴く確率,request:バフ条件
     #situation:盤面条件dict{"status","support_df","buff_list","score_df","judge_dict","rival_list"}
