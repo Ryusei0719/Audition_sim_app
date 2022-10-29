@@ -550,6 +550,8 @@ def sumilate():
     support_df = support_df.replace("",int(0))
     for support in support_list:
         for color in color_list:
+            st.write(support)
+            st.write(color+"_status")
             st.write(support_df.at[support,color+"_status"])
             support_df.at[support,color+"_status"] = int(support_df.at[support,color+"_status"])+EX_dict[support][color]
     st.session_state.support_df = support_df
