@@ -98,7 +98,7 @@ with st.form(key = 'sim_info'):
         for x in weapon_list:
             if x == 'おまかせ(殴り先に最も高いアピールをする札を切る)':
                 x = '*'
-            elif x == 'おまかせ(全観客に与えるアピール値の総和が最も大きい札を切る):
+            elif x == 'おまかせ(全観客に与えるアピール値の総和が最も大きい札を切る)':
                 x = '+'
         st.session_state.weapon_list = weapon_list
         st.session_state.critical_list = [critical_full_name_dict[x] for x in critical_list]
