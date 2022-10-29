@@ -547,7 +547,7 @@ def sumilate():
     }
     result_list = [0,0,0,0,0,0]
     defeat18_num = 0
-    support_df = ger_support_df().loc[support_list]
+    support_df = get_support_df().loc[support_list]
     support_df = support_df.fillna(0)
     for support in support_list:
         for color in color_list:
