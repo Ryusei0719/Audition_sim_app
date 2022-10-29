@@ -8,8 +8,7 @@ st.markdown("***")
 st.subheader('プロデュースアイドル')
 Pidol_name = st.selectbox(
     'アイドル名',
-    idol_list,
-    key = 'Pidol_name'
+    idol_list
 )
 card_list = Pcard_df[Pcard_df['アイドル']==Pidol_name]['カード名'].tolist()
 
@@ -84,5 +83,6 @@ if submit_btn:
     st.session_state.EX_dict = EX_dict
     st.session_state.Scard_index = Sidol_card_list
     st.session_state.Sidol_name_list = Sidol_name_list
+    st.session_state.Pidol_name = Pidol_name
 
     
