@@ -29,6 +29,23 @@ from Pweapon import *
 import streamlit as st
 import numpy as np
 
+from google.oauth2 import service_account
+import gspread
+import pandas as pd
+# スプレッドシートの認証
+scopes = [ 'https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
+credentials = service_account.Credentials.from_service_account_info( st.secrets["gcp_service_account"], scopes=scopes)
+gc = gspread.authorize(credentials)
+# スプレッドシートからデータ取得
+SP_SHEET_KEY = '1_yC-107Od6CYlLbU_jtH_EUmZ3naQ5rmtG5tWQ5LJS4' # スプレッドシートのキー
+sh = gc.open_by_key(SP_SHEET_KEY)
+SP_SHEET = 'SupportCard_index' # シート名「シート1」を指定
+worksheet = sh.worksheet(SP_SHEET)
+data = worksheet.get_all_values() # シート内の全データを取得
+df = pd.DataFrame(data[1:], columns=data[0]) # 取得したデータをデータフレームに変換
+st.table(df)
+
+
 Pcard_df = pd.read_csv('datas/ProduceCard_index.csv',index_col=0,encoding="cp932")
 Scard_df = pd.read_csv('datas/SupportCard_index.csv',index_col=None)
 EX_df = pd.read_csv('datas/EX_index.csv',index_col=0,encoding="shift-jis")
@@ -542,7 +559,7 @@ def sumilate():
         }
         for key,val in st.session_state.game_config['passive_dict'].items():
               val._times = val._max_times
-              st.write(val._times)
+ 
         st.session_state.game_val = {
           'hand_weapon':random.sample(st.session_state.game_config['all_weapon'],3), #手札
           'buff_list' :[], #今鳴いているバフ
