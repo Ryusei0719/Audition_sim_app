@@ -6,6 +6,7 @@ class Passive_template:
     def __init__(self,name,times,p,request,buffs,*args):
         self._name = name
         self._times = times
+        self._max_times = times
         self._p = p
         self._request = request
         self._buffs = buffs
@@ -32,7 +33,7 @@ class Passive_template:
       txt += '\n'
       txt += f'[条件:{get_condition_name(self._request,self._args)}]\n'
       txt += f'[確率:{self._p}%]\n'
-      txt += f'[最大:{self._times}回]'
+      txt += f'[最大:{self._max_times}回]'
       return txt
      
 def get_condition_name(func,val):

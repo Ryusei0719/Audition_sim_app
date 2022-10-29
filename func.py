@@ -536,10 +536,13 @@ def sumilate():
     for i in range(itr_num):
         st.session_state.game_config = {
           'all_weapon':support_list + P_weapon, #選べる全アピール
-          'passive_dict':st.session_state.passive_dict.copy(), #全パッシブ
+          'passive_dict':st.session_state.passive_dict, #全パッシブ
           'rival_list' :initialize(audition_name)[1], #対面の情報
           'rival_critical':get_rival_critical() #対面の判定
         }
+        for key,val in st.session_state.game_config['passive_dict'].items():
+              val._times = val._max_times
+              st.write(val._times)
         st.session_state.game_val = {
           'hand_weapon':random.sample(st.session_state.game_config['all_weapon'],3), #手札
           'buff_list' :[], #今鳴いているバフ
