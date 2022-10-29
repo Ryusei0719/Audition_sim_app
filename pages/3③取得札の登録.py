@@ -244,6 +244,7 @@ clear_weapon_btn = st.button("消去")
 if clear_weapon_btn and len(st.session_state.get_weapon_list)>0:
     st.session_state.get_weapon_list.remove(st.session_state.Pweapon_dict[clear_weapon])
     del st.session_state.Pweapon_dict[clear_weapon]
+    st.experimental_rerun()
 next_btn = st.button("この札で次に進む")
 
 

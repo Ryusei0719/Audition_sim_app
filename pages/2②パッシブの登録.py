@@ -140,6 +140,7 @@ with st.expander("登録パッシブを消去する"):
     if del_btn:
         passive_list.remove(delete)
         del passive_dict[delete]
+        st.experimental_rerun()
 
 submitted = st.button("このパッシブで決定する")
 if submitted:
