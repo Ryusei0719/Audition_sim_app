@@ -55,7 +55,5 @@ st.caption('これは編成と札回しを登録することでオデの勝率�
 
 st.write('左のスライドバーから順番に条件を設定することで、その条件での勝率や何ターンで締まるのかをシュミレーションすることができます。')
 
-st.subheader('お問い合わせ')
-st.markdown('https://docs.google.com/forms/d/e/1FAIpQLSezsZWwtLLn3mfla98NMoXGE9t9E1aDlN1txtjPPEb8VjAm8g/viewform?usp=sf_link')
-
+st.markdown('[お問い合わせはこちら](https://docs.google.com/forms/d/e/1FAIpQLSezsZWwtLLn3mfla98NMoXGE9t9E1aDlN1txtjPPEb8VjAm8g/viewform?usp=sf_link)')
 #st.write(st.session_state)
