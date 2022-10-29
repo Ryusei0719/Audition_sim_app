@@ -93,14 +93,7 @@ def possibility_requirement(situation,val):
 def history_requirement(situation,val):
   set(val[0]) <= set(situation["skill_history"])
   
-def get_passive_dict(choosen_passive_list):
-    passive_dict = {}
-    for key in choosen_passive_list:
-        if key in all_passive_dict.keys():
-            passive_dict[key] = all_passive_dict[key]
-        else:
-            print(key,"は登録されていません")
-    return passive_dict
+
   
 condition_name_dict = {
   '無条件':no_requirement,
