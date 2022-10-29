@@ -12,7 +12,6 @@ Pidol_name = st.selectbox(
     key = 'Pidol_name'
 )
 card_list = Pcard_df[Pcard_df['アイドル']==Pidol_name]['カード名'].tolist()
-st.session_state.Pidol_name = Pidol_name
 
 
 Pidol_index = st.selectbox(
