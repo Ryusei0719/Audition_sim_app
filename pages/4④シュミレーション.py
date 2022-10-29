@@ -95,11 +95,11 @@ with st.form(key = 'sim_info'):
         st.session_state.status = status
         st.session_state.trend = [trend[x:x+2] for x in range(0, len(trend), 2)]
         st.session_state.aim_list = aim_list
-        for x in weapon_list:
+        for i,x in enumerate(weapon_list):
             if x == 'おまかせ(殴り先に最も高いアピールをする札を切る)':
-                x = '*'
+                weapon_list[i] = '*'
             elif x == 'おまかせ(全観客に与えるアピール値の総和が最も大きい札を切る)':
-                x = '+'
+                weapon_list[i] = '+'
         st.session_state.weapon_list = weapon_list
         st.session_state.critical_list = [critical_full_name_dict[x] for x in critical_list]
         finish_flg = False

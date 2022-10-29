@@ -42,7 +42,7 @@ sh = gc.open_by_key(SP_SHEET_KEY)
 SP_SHEET = 'SupportCard_index' # シート名「シート1」を指定
 worksheet = sh.worksheet(SP_SHEET)
 data = worksheet.get_all_values() # シート内の全データを取得
-support_df = pd.DataFrame(data[1:], columns=data[0]) # 取得したデータをデータフレームに変換
+support_df = pd.DataFrame(data[1:], columns=data[0]).fillna(0) # 取得したデータをデータフレームに変換
 
 SP_SHEET = 'ProduceCard_index'
 worksheet = sh.worksheet(SP_SHEET)
@@ -547,7 +547,7 @@ def sumilate():
     result_list = [0,0,0,0,0,0]
     defeat18_num = 0
     support_df = get_support_df().loc[support_list]
-    support_df = support_df.fillna(0)
+    support_df = support_df.replace("",int(0))
     for support in support_list:
         for color in color_list:
             support_df.at[support,color+"_status"] = int(support_df.at[support,color+"_status"])+EX_dict[support][color]

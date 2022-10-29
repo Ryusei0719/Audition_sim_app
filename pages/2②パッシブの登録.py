@@ -34,8 +34,8 @@ for Scard_name in st.session_state.Scard_index:
 if 'Pidol_index' in st.session_state:
     passive_candidate.append(st.session_state.Pidol_index)
 
+st.text('取得するパッシブの情報を入力し、「このパッシブを登録する」ボタンで登録してください')
 st.markdown("***")
-st.text('取得するパッシブの情報を入力し、「取得」ボタンで登録してください')
 
 tab1, tab2 = st.tabs(["パッシブ情報を自分で入力する", "データベース内のパッシブを検索する"])
 with tab1:
