@@ -11,11 +11,6 @@ def info_init():
     return info_dict
 
 st.header('取得札の登録')
-
-st.session_state.Pidol_name = '櫻木真乃'
-st.session_state.Sidol_name_list = ['風野灯織','八宮めぐる','小宮果穂','園田智代子']
-st.session_state.Pidol_index = '花風smiley'
-st.session_state.Scard_index = ['水面を仰いで海の底', '反撃の狼煙をあげよ！', 'kimagure全力ビート！', 'こころ、えんにならんで']
 if 'weapon_info' not in st.session_state:
     st.session_state.weapon_info = info_init()
 
