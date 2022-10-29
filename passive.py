@@ -21,6 +21,7 @@ class Passive_template:
               self._times -= 1
               for buff in self._buffs:
                   passive_list.append({"color":buff[0],"buff":int(buff[1]),"name":self._name})
+        return passive_list
                 
     def get_text(self):
       txt = self._name + '\n'

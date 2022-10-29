@@ -287,7 +287,7 @@ def buff_turn_process(buff_list,turn_num):
   st.session_state.game_val['passive_list'].clear()
   #パッシブスキルを泣かせる
   for key,passive in st.session_state.game_config['passive_dict'].items():
-    passive.add_passive(situation,st.session_state.game_val['passive_list'])
+    st.session_state.game_val['passive_list'] = passive.add_passive(situation,st.session_state.game_val['passive_list'])
 
   #バフターンを1小さくして0ならリストから消去
   remove_list = []
@@ -536,7 +536,7 @@ def sumilate():
     for i in range(itr_num):
         st.session_state.game_config = {
           'all_weapon':support_list + P_weapon, #選べる全アピール
-          'passive_dict':get_passive_dict(taken_passive), #全パッシブ
+          'passive_dict':get_passive_dict(taken_passive).copy(), #全パッシブ
           'rival_list' :initialize(audition_name)[1], #対面の情報
           'rival_critical':get_rival_critical() #対面の判定
         }
