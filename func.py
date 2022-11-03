@@ -552,6 +552,8 @@ def sumilate():
     st.session_state.support_df = support_df
     print("simurating")
     for i in range(itr_num):
+        if aim_list != st.session_state.aim_list:
+              st.write('caution')
         st.session_state.game_config = {
           'all_weapon':support_list + P_weapon, #選べる全アピール
           'passive_dict':st.session_state.passive_dict, #全パッシブ
