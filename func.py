@@ -392,7 +392,8 @@ def one_turn_process(turn_num,aim_list,critical,continue_flg):
   status = st.session_state.status
   week = st.session_state.week
 
-  aim = own_aim(turn_num,aim_list,designate=True)
+  #aim = own_aim(turn_num,aim_list,designate=True)
+  aim = aim_list[turn_num]
   weapon = choose_weapon(hand_weapon,aim,status,week,critical,st.session_state.support_list,st.session_state.game_val['skill_history'],st.session_state.game_val['buff_list'],turn_num)
   order_list = get_order(turn_num,critical,weapon)
   for idol in order_list:
