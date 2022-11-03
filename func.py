@@ -398,7 +398,7 @@ def one_turn_process(turn_num,aim_list,critical,continue_flg):
   for idol in order_list:
     if idol == "Myunit":
       attack(aim,status,weapon,week,critical,st.session_state.support_list,st.session_state.game_val['skill_history'],st.session_state.game_val['buff_list'])
-      st.session_state.game_val['log'].append(weapon+"Apeal!")
+      st.session_state.game_val['log'].append(weapon+"Apeal! to"+aim)
       st.session_state.game_val['all_log'].append(weapon+"Apeal!")
       continue_flg = end_chk(status)
       if not continue_flg:
