@@ -386,18 +386,13 @@ def one_turn_process(turn_num,aim_list,critical,continue_flg):
   st.session_state.game_val['log'].append(show_passive_list(st.session_state.game_val['passive_list']))
   st.session_state.game_val['log'].append("HAND: {0}".format(", ".join(st.session_state.game_val['hand_weapon'])))
   st.session_state.game_val['all_log'].append("buff")
-  if len(st.session_state.aim_list) == 3:
-    designate = False
-  else:
-    designate = True
 
   #自分の攻撃
   hand_weapon = st.session_state.game_val['hand_weapon']
   status = st.session_state.status
   week = st.session_state.week
 
-  aim = own_aim(turn_num,aim_list,designate)
-  st.write(f'{turn_num+1}t:{aim}=入力{st.session_state.aim_list[turn_num]}')
+  aim = own_aim(turn_num,aim_list,designate=True)
   weapon = choose_weapon(hand_weapon,aim,status,week,critical,st.session_state.support_list,st.session_state.game_val['skill_history'],st.session_state.game_val['buff_list'],turn_num)
   order_list = get_order(turn_num,critical,weapon)
   for idol in order_list:
