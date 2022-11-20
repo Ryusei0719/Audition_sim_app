@@ -61,5 +61,5 @@ st.write('左のスライドバーから順番に条件を設定することで�
 st.markdown('バグ報告や仕様の質問はこちらから：[お問い合わせページ](https://docs.google.com/forms/d/e/1FAIpQLSezsZWwtLLn3mfla98NMoXGE9t9E1aDlN1txtjPPEb8VjAm8g/viewform?usp=sf_link)')
 #st.write(st.session_state)
 
-#st.write('note記事：[リンク](%s)' % )
+st.write('note記事：[リンク](%s)' % 'https://note.com/sakuragikonomi/n/n9ed6a5abbb01' )
 st.write('もとになったGoogle Colab版シミュレータ：https://note.com/sakuragikonomi/n/n70944644c4f3' )
