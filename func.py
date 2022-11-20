@@ -115,8 +115,17 @@ def get_buff(buff_list):
     buffs[color] = buff
   return buffs
 
-def choose_weapon(weapon_cnd,aim,P_ATK,week,critical,support_list,skill_history,buff_list,turn_num):
+
+def choose_weapon(weapon_cnd:list,turn_num:int):
+  buff_list = st.session_state.game_val['buff_list']
   buff_dict = get_buff(buff_list)
+  P_ATK = st.session_state.status
+  week = st.session_state.week
+  critical = st.session_state.critical_list[turn_num]
+  support_list = st.session_state.support_list
+  skill_history = st.session_state.game_val['skill_history']
+  aim = st.session_state.aim_list[turn_num]
+  
 
   #打つ順番固定のとき
   if st.session_state.weapon_list[turn_num] not in  ["*","+"]:
@@ -153,8 +162,9 @@ def choose_weapon(weapon_cnd,aim,P_ATK,week,critical,support_list,skill_history,
           atk_cnd = ATK
       return cnd_weapon
 
-def attack(aim,P_ATK,weapon,week,critical,support_list,skill_history,buff_list):
+def attack(aim:str,P_ATK:dict,weapon,week:int,critical:float,support_list:list,skill_history,buff_list:list):
   color_list = ["Vo","Da","Vi"]
+
   if weapon in st.session_state.game_val['hand_weapon']:
     st.session_state.game_val['hand_weapon'].remove(weapon)
   st.session_state.game_val['weapon_hist'].append(weapon)
@@ -376,10 +386,12 @@ def get_order(turn_num,critical,weapon):
 
 
 
-def one_turn_process(turn_num,aim_list,critical,continue_flg):
+def one_turn_process(turn_num):
   #1ターンの処理 turn_numは0からスタート
-  #バフのターン数を1つ小さくする
+  #バフのターン数を1つ小さくし、パッシブを鳴かせるターン開始処理
   buff_turn_process(st.session_state.game_val['buff_list'],turn_num)
+  
+  #ログの準備
   st.session_state.game_val['log'].append("{0}ターン目".format(turn_num+1))
   st.session_state.game_val['all_log'].append("{0}ターン目".format(turn_num+1))
   st.session_state.game_val['log'].append(show_buff_list(st.session_state.game_val['buff_list']))
@@ -391,26 +403,31 @@ def one_turn_process(turn_num,aim_list,critical,continue_flg):
   hand_weapon = st.session_state.game_val['hand_weapon']
   status = st.session_state.status
   week = st.session_state.week
+  critical = st.session_state.critical_list[turn_num]
 
-  #aim = own_aim(turn_num,aim_list,designate=True)
-  aim = aim_list[turn_num]
-  weapon = choose_weapon(hand_weapon,aim,status,week,critical,st.session_state.support_list,st.session_state.game_val['skill_history'],st.session_state.game_val['buff_list'],turn_num)
+  aim = own_aim(turn_num,st.session_state.aim_list,designate=True)
+  #札の決定
+  weapon = choose_weapon(hand_weapon,turn_num)
+  #攻撃順序の決定
   order_list = get_order(turn_num,critical,weapon)
+
   for idol in order_list:
     if idol == "Myunit":
+      st.session_state.game_val['all_log'].append(weapon+"Apeal!")
       attack(aim,status,weapon,week,critical,st.session_state.support_list,st.session_state.game_val['skill_history'],st.session_state.game_val['buff_list'])
       st.session_state.game_val['log'].append(weapon+"Apeal! to"+aim)
-      st.session_state.game_val['all_log'].append(weapon+"Apeal!")
+      
       continue_flg = end_chk(status)
       if not continue_flg:
         return continue_flg
       st.session_state.game_val['all_log'].extend(show_judge(st.session_state.game_val['judge_dict']))
       st.session_state.game_val['log'].append("=========================")
+      st.session_state.game_val['all_log'].append("------------------------------")
 
     #ライバルの攻撃
     else:
       rival = [k for k in st.session_state.game_config['rival_list'] if idol == k["name"]][0]
-      aim = rival_aim(rival,st.session_state.trend,turn_num)
+      rivalAim = rival_aim(rival,st.session_state.trend,turn_num)
       base_ATK = int(rival["base_ATK"] * mys_rate(turn_num))
       #ライバルの思い出アピール
       if st.session_state.game_config['rival_critical'][idol][str(turn_num+1)+"T"] == "m":
@@ -422,14 +439,14 @@ def one_turn_process(turn_num,aim_list,critical,continue_flg):
         st.session_state.game_val['all_log'].append("rival {0} Memory Apeal by {1} ".format(rival["name"],ATK))
       #通常攻撃
       else:
-        if aim==rival["color"]:
+        if rivalAim==rival["color"]:
           base_ATK *= 2
         critical = critical_dict[st.session_state.game_config['rival_critical'][rival["name"]][str(turn_num+1)+"T"]]
         buff = 1
-        ATK = min(int(base_ATK * critical * buff),st.session_state.game_val['judge_dict'][aim]["HP"])
-        st.session_state.game_val['judge_dict'][aim]["HP"] -= ATK
-        st.session_state.game_val['score_df'][aim][rival["name"]] += ATK
-        st.session_state.game_val['all_log'].append("rival {0} {1}Apeal on {2} by {3} ".format(rival["name"],appeal_name[critical],aim,ATK))
+        ATK = min(int(base_ATK * critical * buff),st.session_state.game_val['judge_dict'][rivalAim]["HP"])
+        st.session_state.game_val['judge_dict'][rivalAim]["HP"] -= ATK
+        st.session_state.game_val['score_df'][rivalAim][rival["name"]] += ATK
+        st.session_state.game_val['all_log'].append("rival {0} {1}Apeal on {2} by {3} ".format(rival["name"],appeal_name[critical],rivalAim,ATK))
       continue_flg = end_chk(rival)
       if not continue_flg:
         return continue_flg
@@ -551,10 +568,8 @@ def sumilate():
         for color in color_list:
             support_df.at[support,color+"_status"] = int(support_df.at[support,color+"_status"])+EX_dict[support][color]
     st.session_state.support_df = support_df
-    print("simurating")
+
     for i in range(itr_num):
-        if aim_list != st.session_state.aim_list:
-              st.write('caution')
         st.session_state.game_config = {
           'all_weapon':support_list + P_weapon, #選べる全アピール
           'passive_dict':st.session_state.passive_dict, #全パッシブ
@@ -586,7 +601,8 @@ def sumilate():
                   turn_num = 4
                   break
             else:
-              continue_flg = one_turn_process(turn_num,aim_list,critical_list[turn_num],continue_flg)
+              #continue_flg = one_turn_process(turn_num,aim_list,critical_list[turn_num],continue_flg)
+              continue_flg = one_turn_process(turn_num)
             turn_num += 1
         st.session_state.game_val['score_df'] = cal_result(st.session_state.game_val['score_df'],trend,st.session_state.game_val['judge_dict'],st.session_state.game_val['LA_dict'])
         st.session_state.game_val['log'].append("======================")

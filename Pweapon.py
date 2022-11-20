@@ -30,7 +30,7 @@ class Pweapon_template:
     else:
       ATK_dict = {}
       link_flg = func.chk_link(skill_history,self._idol)
-      weapon_rate=self.info['weapon_rate']
+      weapon_rate=self.info['weapon_rate'].copy()
       buff_dict = func.get_buff(buff_list)
       for color in color_list:
         buff = buff_dict[color]

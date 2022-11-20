@@ -48,19 +48,12 @@ if 'weapon_list' not in st.session_state:
     st.session_state.weapon_list = ["*","*","*","*","*"]
 
 st.set_page_config(
-    page_title="Ex-stream-ly Cool App",
-    page_icon="🧊",
-    layout="wide",
+    page_title="オーディションシミュレータ",
     initial_sidebar_state="expanded",
-    menu_items={
-        'Get Help': 'https://www.extremelycoolapp.com/help',
-        'Report a bug': "https://www.extremelycoolapp.com/bug",
-        'About': "# This is a header. This is an *extremely* cool app!"
-    }
 )
 
 
-st.title('オーディションシュミレータ(1.0.0)')
+st.title('オーディションシミュレータ(1.0.0)')
 st.write('これは編成と札回しを登録することでオデの勝率をシュミレーションできるアプリです。')
 
 st.write('左のスライドバーから順番に条件を設定することで、その条件での勝率や何ターンで締まるのかをシュミレーションすることができます。')
@@ -69,4 +62,4 @@ st.markdown('バグ報告や仕様の質問はこちらから：[お問い合わ
 #st.write(st.session_state)
 
 #st.write('note記事：[リンク](%s)' % )
-st.write('もとになったGoogle Colab版シュミレータ：https://note.com/sakuragikonomi/n/n70944644c4f3' )
+st.write('もとになったGoogle Colab版シミュレータ：https://note.com/sakuragikonomi/n/n70944644c4f3' )
