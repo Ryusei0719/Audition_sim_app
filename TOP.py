@@ -63,3 +63,5 @@ st.markdown('バグ報告や仕様の質問はこちらから：[お問い合わ
 
 st.write('note記事：https://note.com/sakuragikonomi/n/n9ed6a5abbb01' )
 st.write('もとになったGoogle Colab版シミュレータ：https://note.com/sakuragikonomi/n/n70944644c4f3' )
+
+#st.write(support_df)

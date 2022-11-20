@@ -144,7 +144,7 @@ def choose_weapon(weapon_cnd:list,turn_num:int):
           attack_type,ATK_dict = memory(st.session_state.memory_lv,P_ATK,week,support_list,skill_history,buff_list)
         #自札攻撃力計算
         elif weapon in list(st.session_state.Pweapon_dict.keys()):
-          attack_type,ATK_dict = st.session_state.Pweapon_dict[weapon].get_ATK(P_ATK,week,critical,support_list,skill_history,buff_list,buff_add=False)
+          attack_type,ATK_dict = st.session_state.Pweapon_dict[weapon].get_ATK(P_ATK,aim,week,critical,support_list,skill_history,buff_list,buff_add=False)
         #サポ札攻撃力計算
         else:
           attack_type,ATK_dict = get_ATK(P_ATK,weapon,week,critical,support_list,skill_history,buff_list,aim,buff_add=False)
@@ -173,7 +173,7 @@ def attack(aim:str,P_ATK:dict,weapon,week:int,critical:float,support_list:list,s
     attack_type,ATK_dict = memory(st.session_state.memory_lv,P_ATK,week,support_list,skill_history,buff_list)
   #自札攻撃力計算
   elif weapon in list(st.session_state.Pweapon_dict.keys()):
-    attack_type,ATK_dict = st.session_state.Pweapon_dict[weapon].get_ATK(P_ATK,week,critical,support_list,skill_history,buff_list)
+    attack_type,ATK_dict = st.session_state.Pweapon_dict[weapon].get_ATK(P_ATK,aim,week,critical,support_list,skill_history,buff_list)
   #サポ札攻撃力計算
   else:
     attack_type,ATK_dict = get_ATK(P_ATK,weapon,week,critical,support_list,skill_history,buff_list,aim)
@@ -568,6 +568,7 @@ def sumilate():
         for color in color_list:
             support_df.at[support,color+"_status"] = int(support_df.at[support,color+"_status"])+EX_dict[support][color]
     st.session_state.support_df = support_df
+    #st.write(st.session_state.support_df)
 
     for i in range(itr_num):
         st.session_state.game_config = {

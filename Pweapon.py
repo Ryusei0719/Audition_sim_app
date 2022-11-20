@@ -3,6 +3,7 @@ import streamlit as st
 import random
 #自札の登録
 color_list = ['Vo','Da','Vi']
+Exincolor_list = ['Vo','Da','Vi','Ex']
 
 class Pweapon_template:
   '''
@@ -24,7 +25,7 @@ class Pweapon_template:
     self.info = info_dict
     self._special = special
   
-  def get_ATK(self,P_ATK,week,critical,support_list,skill_history,buff_list,buff_add =True):
+  def get_ATK(self,P_ATK,aim,week,critical,support_list,skill_history,buff_list,buff_add =True):
     if self._special =='ピトス':
       return  pitosu4(P_ATK,week,critical,support_list,skill_history,buff_list,buff_add)
     else:
@@ -32,19 +33,23 @@ class Pweapon_template:
       link_flg = func.chk_link(skill_history,self._idol)
       weapon_rate=self.info['weapon_rate'].copy()
       buff_dict = func.get_buff(buff_list)
-      for color in color_list:
+      for c in Exincolor_list:
+        color = aim if c == "Ex" else c
         buff = buff_dict[color]
         S_status = 0
         for support in support_list:
           S_status += st.session_state.support_df.at[support,"{0}_status".format(color)]
         if link_flg and self.info['link'][0] == 'ATK':
-          weapon_rate[color] += self.info['link'][1][color]
-        ATK = int(int(int(P_ATK[color]*2 + S_status * 0.2 * (1 + 0.1*week)) * buff*critical )*weapon_rate[color])
-        ATK_dict[color] = ATK
-        if buff_add:
+          weapon_rate[c] += self.info['link'][1][color]
+        ATK = int(int(int(P_ATK[color]*2 + S_status * 0.2 * (1 + 0.1*week)) * buff*critical )*weapon_rate[c])
+        ATK_dict[c] = ATK
+        if c != "Ex" and buff_add:
           buff_list.extend(self.info['buff'])
           if link_flg and self.info['link'][0] == 'buff':
             buff_list.extend(self.info['link'][1])
+      
+      ATK_dict[aim] += ATK_dict["Ex"]
+      del ATK_dict["Ex"]
       return self.info['type'],ATK_dict
   
   def get_text(self):
@@ -94,6 +99,7 @@ color_dict = {
   'Dance&Visual':['Da','Vi'],
   'Visual&Vocal':['Vi','Vo'],
   'Vocal&Danec&Visual':['Vo','Da','Vi'],
+  'Excellent':['Ex'],
   '注目度':['At'],
   '回避率':['Av'],
   'パッシブ発動率':['PASIVEpr']
@@ -158,13 +164,13 @@ all_weapon_dict = {
 }
 
 def get_default_weapon_dict(idol):
-  Vo1 = Pweapon_template(idol,'Vo1倍アピール',{'type':'single','weapon_rate':{'Vo':1,'Da':0,'Vi':0},
+  Vo1 = Pweapon_template(idol,'Vo1倍アピール',{'type':'single','weapon_rate':{'Vo':1,'Da':0,'Vi':0,'Ex':0},
     'buff':[],'link':[None,None]})
-  Da1 = Pweapon_template(idol,'Da1倍アピール',{'type':'single','weapon_rate':{'Vo':0,'Da':1,'Vi':0},
+  Da1 = Pweapon_template(idol,'Da1倍アピール',{'type':'single','weapon_rate':{'Vo':0,'Da':1,'Vi':0,'Ex':0},
           'buff':[],'link':[None,None]})
-  Vi1 = Pweapon_template(idol,'Vi1倍アピール',{'type':'single','weapon_rate':{'Vo':0,'Da':0,'Vi':1},
+  Vi1 = Pweapon_template(idol,'Vi1倍アピール',{'type':'single','weapon_rate':{'Vo':0,'Da':0,'Vi':1,'Ex':0},
           'buff':[],'link':[None,None]})
-  mental_cure = Pweapon_template(idol,'メンタルキュア',{'type':'single','weapon_rate':{'Vo':0,'Da':0,'Vi':0},
+  mental_cure = Pweapon_template(idol,'メンタルキュア',{'type':'single','weapon_rate':{'Vo':0,'Da':0,'Vi':0,'Ex':0},
           'buff':[],'link':[None,None]})
       
       

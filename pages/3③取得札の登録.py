@@ -4,7 +4,7 @@ from Pweapon import *
 def info_init():
     info_dict = {
     'type':'single',
-    'weapon_rate':{'Vo':0,'Da':0,'Vi':0},
+    'weapon_rate':{'Vo':0,'Da':0,'Vi':0,'Ex':0},
     'buff':[],
     'link':[None,None]
     }
@@ -49,7 +49,7 @@ with tab1:
         with cl2:
             color =st.selectbox(
                 'メイン',
-                ('Vocal','Dance','Visual','Vocal&Dance','Dance&Visual','Visual&Vocal','Vocal&Danec&Visual'),
+                ('Vocal','Dance','Visual','Vocal&Dance','Dance&Visual','Visual&Vocal','Vocal&Danec&Visual','Excellent'),
                 label_visibility='hidden'
             )
         

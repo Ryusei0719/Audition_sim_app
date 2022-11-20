@@ -125,6 +125,7 @@ with st.form(key = 'sim_info'):
                     st.text(key+':'+val)
             st.text('(18負け)：'+out['(18負け)'])
 
-    st.write([x.get_text() for x in st.session_state.get_weapon_list])
-    st.write([x.get_text() for x in st.session_state.Pweapon_dict.values()])
+    #st.write([x.get_text() for x in st.session_state.get_weapon_list])
+    #st.write([x.get_text() for x in st.session_state.Pweapon_dict.values()])
+    #st.write(support_df)
 # %%
