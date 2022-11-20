@@ -32,7 +32,9 @@ for Scard_name in st.session_state.Scard_index:
             passive_candidate.append(passive_name)
 
 if 'Pidol_index' in st.session_state:
-    passive_candidate.append(st.session_state.Pidol_index)
+    for passive_name in all_passive_dict.keys():
+        if st.session_state.Pidol_index in passive_name:
+            passive_candidate.append(passive_name)
 
 st.text('取得するパッシブの情報を入力し、「このパッシブを登録する」ボタンで登録してください')
 st.markdown("***")

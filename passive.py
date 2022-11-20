@@ -117,9 +117,9 @@ buff_icon_dict ={
   'PASSIVEpr':'発動率UP'
 }
 
-all_passive_dict = {"花風smiley金1":Passive_template("花風金1",3,30,no_requirement,[["Da",75]]),
-            "花風smiley白":Passive_template("花風白1",3,30,three_color_requirement,[["Vo",50],["Da",50],["Vi",50]]),
-            "花風smiley金2":Passive_template("花風金2",3,30,three_color_requirement,[["Vo",100],["Da",100],["Vi",100]]),
+all_passive_dict = {"花風Smiley金1":Passive_template("花風金1",3,30,no_requirement,[["Da",75]]),
+            "花風Smiley白":Passive_template("花風白1",3,30,three_color_requirement,[["Vo",50],["Da",50],["Vi",50]]),
+            "花風Smiley金2":Passive_template("花風金2",3,30,three_color_requirement,[["Vo",100],["Da",100],["Vi",100]]),
             "水面を仰いで海の底金":Passive_template("海金",3,10,after_turn_requirement,[["Da",60],["Vi",30]],3),
             "水面を仰いで海の底白":Passive_template("海白1",3,10,no_requirement,[["Da",40],["Vi",20]]),
             "反撃の狼煙をあげよ！金":Passive_template("狼煙金",3,20,after_turn_requirement,[["Vo",50],["Da",50],["Vi",50]],3),

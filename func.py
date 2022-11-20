@@ -531,7 +531,7 @@ def sumilate():
     critical_list = st.session_state.critical_list
     aim_list = st.session_state.aim_list
     trend = st.session_state.trend
-    itr_num = 1000
+    itr_num = st.session_state.itr_num
   
     log_dict = {
       '1ターン締め':[],
@@ -582,10 +582,12 @@ def sumilate():
         continue_flg = True
         #フェス1回分のシュミレーション
         while(continue_flg):
-            continue_flg = one_turn_process(turn_num,aim_list,critical_list[turn_num],continue_flg)
-            turn_num += 1
             if turn_num > 4:
-                continue_flg = False
+                  turn_num = 4
+                  break
+            else:
+              continue_flg = one_turn_process(turn_num,aim_list,critical_list[turn_num],continue_flg)
+            turn_num += 1
         st.session_state.game_val['score_df'] = cal_result(st.session_state.game_val['score_df'],trend,st.session_state.game_val['judge_dict'],st.session_state.game_val['LA_dict'])
         st.session_state.game_val['log'].append("======================")
         
@@ -595,7 +597,9 @@ def sumilate():
         log.append(str(st.session_state.game_val['score_df'])) 
         message = '\n'.join(log)
         
-        if "Myunit" in st.session_state.game_val['score_df'].sort_values("star",ascending=False).index[0:2].to_list() and turn_num<5:
+
+        
+        if "Myunit" in st.session_state.game_val['score_df'].sort_values("star",ascending=False).index[0:2].to_list() and not continue_flg:
             st.session_state.game_val['log'].append("{0}ターン締め".format(turn_num))
             result_list[turn_num-1] += 1
             log_dict[f'{turn_num}ターン締め'].append(message)
@@ -603,7 +607,7 @@ def sumilate():
             st.session_state.game_val['log'].append("敗退")
             result_list[-1] += 1
             log_dict['敗退'].append(message)
-            if st.session_state.game_val['score_df']["star"]["Myunit"] >= 13 and turn_num<5:
+            if st.session_state.game_val['score_df']["star"]["Myunit"] >= 13 and not continue_flg:
                 defeat18_num += 1
                 log_dict['18負け'].append(message)
                 
@@ -614,6 +618,6 @@ def sumilate():
             ret_dict[f"{i+1}ターン締め"] = f"{100*num/itr_num}%"
         else:
               ret_dict['敗退'] = f"{100*num/itr_num}%"
-        ret_dict["18負け"] = f'{100*defeat18_num/itr_num}%'
+        ret_dict["(18負け)"] = f'{100*defeat18_num/itr_num}%'
     return ret_dict
 # %%

@@ -88,8 +88,19 @@ with st.form(key = 'sim_info'):
             ['おまかせ(殴り先に最も高いアピールをする札を切る)','おまかせ(全観客に与えるアピール値の総和が最も大きい札を切る)','memory']+list(st.session_state.Pweapon_dict.keys())+st.session_state.support_list,
             key = f'weapon{i}'
         )
-            
-    sim_btn = st.form_submit_button('シュミレーション開始')
+        
+    st.markdown("****")
+    cl1,cl2 = st.columns(2)
+    with cl1:
+        itr_num = st.number_input(
+            label='シュミレーション回数',
+            value = 1000,
+            step = 100,
+            key = 'itr_num'
+        )       
+    with cl2:
+        st.write('')
+        sim_btn = st.form_submit_button('シュミレーション開始')
     
     if sim_btn:
         st.session_state.status = status
@@ -110,6 +121,8 @@ with st.form(key = 'sim_info'):
         if finish_flg:
             st.subheader('シュミレーション結果')
             for key,val in out.items():
-                st.text(key+':'+val)
+                if not key == '(18負け)':
+                    st.text(key+':'+val)
+            st.text('(18負け)：'+out['(18負け)'])
 
 # %%
