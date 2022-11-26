@@ -17,8 +17,10 @@ with st.expander("使用した編成"):
     for name,weapon in st.session_state.Pweapon_dict.items():
         st.text(name+':'+weapon.get_text())
     
-    st.text('オーディション：'+st.session_state.audition_name)
-    #st.text(st.session_state.aim_list)
+    if 'trend' in st.session_state:
+        st.text('オーディション：'+st.session_state.audition_name)
+        st.text('流行：'+'→'.join(st.session_state.trend))
+        st.text('殴り先：'+'→'.join(st.session_state.aim_list))
 
 if 'simulate_log' not in st.session_state:
     st.text('先にシュミレーションをしてください')
