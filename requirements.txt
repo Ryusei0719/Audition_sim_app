@@ -5,3 +5,4 @@ streamlit-nested-layout
 google
 gspread
 extra_streamlit_components
+deta = 1.1.0
