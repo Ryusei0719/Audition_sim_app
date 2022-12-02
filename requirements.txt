@@ -4,3 +4,4 @@ openpyxl
 streamlit-nested-layout
 google
 gspread
+extra_streamlit_components
