@@ -46,6 +46,9 @@ if 'critical_list' not in st.session_state:
 
 if 'weapon_list' not in st.session_state:
     st.session_state.weapon_list = ["*","*","*","*","*"]
+    
+if 'login' not in st.session_state:
+    st.session_state.login = False
 
 st.set_page_config(
     page_title="オーディションシミュレータ",
@@ -58,6 +61,28 @@ st.write('これは編成と札回しを登録することでオデの勝率を�
 
 st.write('左のスライドバーから順番に条件を設定することで、その条件での勝率や何ターンで締まるのかをシュミレーションすることができます。')
 
+
+#with st.form('form'):
+#    st.write('ログイン')
+#    name = st.text_input("ユーザ名")
+#    password = st.text_input('パスワード')
+#    log_in = st.form_submit_button("ログイン")
+#    with st.expander('新規登録'):
+#        name = st.text_input("ユーザ名")
+#        password = st.text_input('パスワード')
+#        log_in = st.form_submit_button("新規登録")
+
+
+#新規登録
+
+
+#ログイン処理
+
+    
+        
+    
+
+st.markdown('***')
 st.markdown('バグ報告や仕様の質問はこちらから：[お問い合わせページ](https://docs.google.com/forms/d/e/1FAIpQLSezsZWwtLLn3mfla98NMoXGE9t9E1aDlN1txtjPPEb8VjAm8g/viewform?usp=sf_link)')
 #st.write(st.session_state)
 

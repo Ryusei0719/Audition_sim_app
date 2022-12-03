@@ -1,5 +1,7 @@
 import streamlit as st
 from func import *
+import streamlit.components.v1 as components
+import webbrowser
 
 st.header('編成登録')
 st.text('シュミレーションする編成を登録してください')
@@ -66,6 +68,8 @@ for i,col in enumerate(cols):
 
 submit_btn = st.button('登録')
 
+
+
 if submit_btn:
     st.session_state.support_list = [x+y+z for x,y,z in zip(Sidol_name_list,Sidol_card_list,Sidol_totu_list)]
     
@@ -84,5 +88,7 @@ if submit_btn:
     st.session_state.Sidol_name_list = Sidol_name_list
     st.session_state.Pidol_name = Pidol_name
     st.session_state.Pidol_index = Pidol_index
+
+
 
     
