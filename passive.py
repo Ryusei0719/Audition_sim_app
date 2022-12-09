@@ -2,7 +2,7 @@ import random
 import func
 
 class Passive_template:
-    #name:バフ名,times:鳴く回数(最大),p:条件を満たしたときに鳴く確率,request:バフ条件
+    #name:バフ名,times:鳴く回数(最大),p:条件を満たしたときに鳴く確率,request:バフ条件(function)
     #situation:盤面条件dict{"status","support_df","buff_list","score_df","judge_dict","rival_list"}
     #buffs:鳴くバフ キュンコメ[["Vi",120],["Da",80],["Vo",80]]みたいに2次元配列を渡す
     def __init__(self,name,times,p,request,buffs,*args):
@@ -37,6 +37,32 @@ class Passive_template:
       txt += f'[確率:{self._p}%]\n'
       txt += f'[最大:{self._max_times}回]'
       return txt
+    
+    def get_DB_info(self):
+      ret = {
+        'Vo':0,
+        'Da':0,
+        'Vi':0,
+        'Otherbuff':None,
+        'Otherrate':0
+      }
+      for color,rate in self._buffs:
+        if color in ret.keys():
+              ret[color] = rate
+        else:
+              ret['Otherbuff'] = color
+              ret['Otherrate'] = rate
+      ret['passive_name'] = self._name
+      ret['requirement'] = condition_func_dict[self._request]
+      if len(self._args) == 0:
+            ret['args'] = 0
+      else:
+        ret['args'] = self._args[0]
+      ret['times'] = self._times
+      ret['p'] = self._p
+      return ret
+      
+          
      
 def get_condition_name(func,val):
   if func == no_requirement:
@@ -94,6 +120,8 @@ def possibility_requirement(situation,val):
 
 #履歴条件
 def history_requirement(situation,val):
+  if type(val[0]) == str:
+    val[0] = [val[0]]
   set(val[0]) <= set(situation["skill_history"])
   
 
@@ -107,6 +135,8 @@ condition_name_dict = {
   '履歴に(アイドル)がある場合':history_requirement,
   'それ以外':possibility_requirement
 }
+
+condition_func_dict = {k:v for v,k in condition_name_dict.items()}
   
 buff_icon_dict ={
   'Vo':'Vocal',
@@ -114,7 +144,7 @@ buff_icon_dict ={
   'Vi':'Visual',
   'At':'注目度',
   'Av':'回避率',
-  'PASSIVEpr':'発動率UP'
+  'PASSIVEpr':'パッシブ発動率アップ'
 }
 
 all_passive_dict = {"花風Smiley金1":Passive_template("花風金1",3,30,no_requirement,[["Da",75]]),

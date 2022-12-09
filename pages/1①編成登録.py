@@ -68,11 +68,9 @@ for i,col in enumerate(cols):
 
 submit_btn = st.button('登録')
 
-
-
 if submit_btn:
     st.session_state.support_list = [x+y+z for x,y,z in zip(Sidol_name_list,Sidol_card_list,Sidol_totu_list)]
-    
+    st.session_state.totu_list = Sidol_totu_list
     #EX周りをシュミレータの引数の形に成形
     EX_dict = {}
     for i,idol in enumerate(st.session_state.support_list):

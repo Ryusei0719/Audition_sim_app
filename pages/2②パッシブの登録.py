@@ -86,7 +86,6 @@ with tab1:
                 idol_list
             )
             val = idols
-            st.text(val)
         if condition_func == possibility_requirement:
             val = [0,0,0,0,0]
             for i in range(5):
