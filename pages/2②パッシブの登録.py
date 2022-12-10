@@ -5,17 +5,6 @@ from passive import *
 from func import *
 
 st.header('パッシブの登録')
-
-@st.cache(allow_output_mutation=True)
-def cache_list():
-    return []
-@st.cache(allow_output_mutation=True)
-def cache_dict():
-    return {}
-
-passive_list = cache_list()
-passive_dict = cache_dict()
-
 name = ''
 buffs = [["Vo",0],["Da",0],["Vi",0],['At',0],['Av',0]]
 buffs = {"Vo":0,"Da":0,"Vi":0}
@@ -106,8 +95,7 @@ with tab1:
     st.text(passive.get_text())
     regist = st.button('このパッシブを登録する',key = 'own_passive_regi')
     if regist:
-        passive_list.append(name)
-        passive_dict[name]=passive
+        st.session_state.passive_dict[name]=passive
 
 with tab2:
     passive_name = st.selectbox(
@@ -122,30 +110,27 @@ with tab2:
         st.text(passive.get_text())
         regist = st.button('このパッシブを登録する',key = 'templete_pasive_regi')
         if regist:
-            passive_list.append(passive_name)
-            passive_dict[passive_name]=passive
+            st.session_state.passive_dict[passive_name]=passive
         
+
 st.markdown("***")
 st.subheader('登録されているパッシブスキル')
-for name,passive in passive_dict.items():
+for name,passive in st.session_state.passive_dict.items():
     st.text(name)
     st.caption(passive.get_text())
 with st.expander("登録パッシブを消去する"):
     delete = st.selectbox(
         're',
-        passive_list,
+        st.session_state.passive_dict.keys(),
         label_visibility='hidden'
     )
     del_btn = st.button('このパッシブを消去する')
     if del_btn:
-        passive_list.remove(delete)
-        del passive_dict[delete]
+        del st.session_state.passive_dict[delete]
         st.experimental_rerun()
 
 submitted = st.button("このパッシブで決定する")
-if submitted:
-    st.session_state.passive_list =passive_list
-    st.session_state.passive_dict=passive_dict
+
         
 
 

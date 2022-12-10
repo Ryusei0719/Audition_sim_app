@@ -11,6 +11,7 @@ def info_init():
     return info_dict
 
 st.header('取得札の登録')
+st.write('パネルを開けて獲得するアピール札の情報を登録してください。')
 if 'weapon_info' not in st.session_state:
     st.session_state.weapon_info = info_init()
 

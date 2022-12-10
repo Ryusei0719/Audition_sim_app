@@ -32,6 +32,8 @@ class Pweapon_template:
       ATK_dict = {}
       link_flg = func.chk_link(skill_history,self._idol)
       weapon_rate=self.info['weapon_rate'].copy()
+      if 'Ex' not in weapon_rate.keys():
+            weapon_rate['Ex'] = 0
       buff_dict = func.get_buff(buff_list)
       for c in Exincolor_list:
         color = aim if c == "Ex" else c

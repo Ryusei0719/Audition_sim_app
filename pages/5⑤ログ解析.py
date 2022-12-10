@@ -1,6 +1,9 @@
 import streamlit as st
+import datahandler as DH
 
 st.header('ログの解析')
+
+DH.side_info()
 
 with st.expander("使用した編成"):
     st.text('プロデュースアイドル：'+st.session_state.Pidol_name+st.session_state.Pidol_index)
@@ -17,10 +20,35 @@ with st.expander("使用した編成"):
     for name,weapon in st.session_state.Pweapon_dict.items():
         st.text(name+':'+weapon.get_text())
     
-    if 'trend' in st.session_state:
+    if 'audition_name' in st.session_state:
         st.text('オーディション：'+st.session_state.audition_name)
+    if 'trend' in st.session_state:
         st.text('流行：'+'→'.join(st.session_state.trend))
+    if 'aim_list' in st.session_state:
         st.text('殴り先：'+'→'.join(st.session_state.aim_list))
+    
+if st.session_state.login and 'user_name' in st.session_state:
+
+    cl1,cl2 = st.columns(2)
+    with cl1:
+        push_deckname = st.text_input('この編成を登録しておく')
+        if st.button('登録'):
+            ret = DH.push_all_info(st.session_state.user_name,push_deckname,st.session_state)
+            if ret[0]>0:
+                st.success(f'{push_deckname}を登録しました')
+            elif ret[0] == -2:
+                st.error(ret[1])
+            
+    with cl2:
+        delete_deckname = st.selectbox(
+            '編成を削除する',
+            DH.get_deckname(st.session_state.user_name)
+        )
+        if st.button('削除'):
+            DH.delete_info(st.session_state.user_name,delete_deckname)
+            st.experimental_rerun()
+            
+st.markdown('***')
 
 if 'simulate_log' not in st.session_state:
     st.text('先にシュミレーションをしてください')

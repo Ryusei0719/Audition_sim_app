@@ -20,7 +20,6 @@ def check_dup_deckname(all_record,username,deckname):
 def push_deck(username,deck_name,SS):
     deta = Deta(st.secrets["deta_key"])
     db = deta.Base("Idol-db")
-    all_record = db.fetch().items
 
     #プロデュースアイドル登録
     push_dict = {
@@ -55,27 +54,26 @@ def push_deck(username,deck_name,SS):
 def fetch_deck(user_name,deck_name,SS):
     deta = Deta(st.secrets["deta_key"])
     db = deta.Base("Idol-db")
-    all_record = db.fetch().items
+    all_record = db.fetch({'name':user_name,'deck_name':deck_name}).items
     Sidol_name_list = []
     Scard_index = []
     totu_list = []
     support_list = []
     EX_dict = {}
     for record in all_record:
-        if record['name']==user_name and record['deck_name'] == deck_name:
-            if record['card_type'] == 'P':
-                SS.Pidol_name = record['idol_name']
-                SS.Pidol_index = record['card_name']
-            elif record['card_type'] == 'S':
-                Sidol_name_list.append(record['idol_name'])
-                Scard_index.append(record['card_name'])
-                totu_list.append(record['totu'])
-                support_name = record['idol_name']+record['card_name']+record['totu']
-                support_list.append(support_name)
-                Ex = {'Vo':record['Vo_EX'],'Da':record['Da_EX'],'Vi':record['Vi_EX']}
-                EX_dict[support_name] = Ex
-            else:
-                return -1,'type_error'
+        if record['card_type'] == 'P':
+            SS.Pidol_name = record['idol_name']
+            SS.Pidol_index = record['card_name']
+        elif record['card_type'] == 'S':
+            Sidol_name_list.append(record['idol_name'])
+            Scard_index.append(record['card_name'])
+            totu_list.append(record['totu'])
+            support_name = record['idol_name']+record['card_name']+record['totu']
+            support_list.append(support_name)
+            Ex = {'Vo':record['Vo_EX'],'Da':record['Da_EX'],'Vi':record['Vi_EX']}
+            EX_dict[support_name] = Ex
+        else:
+            return -1,'type_error'
     if len(Sidol_name_list) != 4:
         return -1,'number of Scard invalid'
     else:
@@ -84,6 +82,7 @@ def fetch_deck(user_name,deck_name,SS):
         SS.totu_list = totu_list
         SS.support_list = support_list
         SS.EX_dict = EX_dict
+        return 1,'success'
         
 def push_passive(username,deckname,SS):
     deta = Deta(st.secrets["deta_key"])
@@ -93,20 +92,20 @@ def push_passive(username,deckname,SS):
         info['name'] = username
         info['deck_name'] = deckname
         db.put(info)
+    return 1,'success'
         
 def fetch_passive(username,deckname,SS):
     deta = Deta(st.secrets["deta_key"])
     db = deta.Base("Passive-db")
-    all_record = db.fetch().items
+    all_record = db.fetch({'name':username,'deck_name':deckname}).items
     passive_dict = {}
     for record in all_record:
-        if record['name']==username and record['deck_name'] == deckname:
-            buffs = []
-            for color in ['Vo','Da','Vi']:
-                if record[color] > 0:
-                    buffs.append([color,record[color]])
-            if record['Otherbuff'] != None:
-                buffs.append([record['Otherbuff'],record['Otherrate']])
+        buffs = []
+        for color in ['Vo','Da','Vi']:
+            if record[color] > 0:
+                buffs.append([color,record[color]])
+        if record['Otherbuff'] != None:
+            buffs.append([record['Otherbuff'],record['Otherrate']])
         val = record['args']
         passive_dict[record['passive_name']] = Passive_template(
             record['passive_name'],
@@ -136,12 +135,11 @@ def push_Pweapon(username,deckname,SS):
 def fetch_Pweapon(username,deckname,SS):
     deta = Deta(st.secrets["deta_key"])
     db = deta.Base("Pweapon-db")
-    all_record = db.fetch().items
+    all_record = db.fetch({'name':username,'deck_name':deckname}).items
     Pweapon_dict = {}
     for record in all_record:
-        if record['name']==username and record['deck_name'] == deckname:
-            weapon = Pweapon_template(record['idol'],record['weapon_name'],record['info_dict'])
-            Pweapon_dict[record['weapon_name']] = weapon
+        weapon = Pweapon_template(record['idol'],record['weapon_name'],record['info_dict'])
+        Pweapon_dict[record['weapon_name']] = weapon
     SS.Pweapon_dict = Pweapon_dict
     return 1,'success'
 
@@ -149,25 +147,21 @@ def push_all_info(username,deckname,SS):
     deta = Deta(st.secrets["deta_key"])
     db = deta.Base("Idol-db")
     #編成名がかぶってないかチェック
-    all_record = db.fetch().items
-    flag = False
-    for record in all_record:
-        if record['name']==username and record['deck_name'] == deckname:
-            flag = True
-            break
-    if flag:
-        return -1,'既に同じ編成名が登録されています。別の編成名で登録してください'
+    all_record = db.fetch({'name':username,'deck_name':deckname}).items
+    if len(all_record)>0:
+        return -2,'既に同じ編成名が登録されています。別の名前で登録するか，既に登録されている編成を消してから登録してください。'
 
-    ret = push_deck(username,deckname,SS)
-    if ret[0]<0:
-        return ret
-    ret = push_passive(username,deckname,SS)
-    if ret[0]<0:
-        return ret
-    ret = push_Pweapon(username,deckname,SS)
-    if ret[0]<0:
-        return ret
-    return 1,'success'
+    else:
+        ret = push_deck(username,deckname,SS)
+        if ret[0]<0:
+            return ret
+        ret = push_passive(username,deckname,SS)
+        if ret[0]<0:
+            return ret
+        ret = push_Pweapon(username,deckname,SS)
+        if ret[0]<0:
+            return ret
+        return 1,'success'
     
 def fetch_all_info(username,deckname,SS):
     ret = fetch_deck(username,deckname,SS)
@@ -180,3 +174,33 @@ def fetch_all_info(username,deckname,SS):
     if ret[0]<0:
         return ret
     return 1,'success'
+
+def get_deckname(username):
+    deta = Deta(st.secrets["deta_key"])
+    db = deta.Base("Idol-db")
+    all_record = db.fetch().items
+    deck_list = []
+    for record in all_record:
+        if record['name'] == username:
+            if record['deck_name'] not in deck_list:
+                deck_list.append(record['deck_name'])
+    return deck_list
+
+def side_info():
+    if st.session_state.login:
+        with st.sidebar:
+            st.write(f'お疲れさまです　{st.session_state.user_name}P!')
+            st.write('登録されている編成▽')
+            deck_list = get_deckname(st.session_state.user_name)
+            for deckname in deck_list:
+                st.text('・'+deckname)
+                
+def delete_info(username,deckname):
+    deta = Deta(st.secrets["deta_key"])
+    db_names = ['Idol-db','Passive-db','Pweapon-db']
+    for db_name in db_names:
+        db = deta.Base(db_name)
+        all_record = db.fetch({'name':username,'deck_name':deckname}).items
+        for record in all_record:
+            db.delete(record['key'])
+        

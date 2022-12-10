@@ -1,5 +1,6 @@
 import streamlit as st
 from func import *
+from datahandler import *
 
 st.header('シュミレーション')
 st.text('札回しを選択してシュミレーションします')
@@ -9,14 +10,43 @@ aim_list = ['Vo','Vo','Vo','Vo','Vo']
 critical_list =['p','p','p','p','p']
 weapon_list = [None,None,None,None,None]
 
+side_info()
+if st.session_state.login and 'user_name' in st.session_state:
+    st.markdown('***')
+    cl1,cl2 = st.columns(2)
+    with cl1:
+        deck_name = st.selectbox(
+            '登録した編成を呼び出す',
+            get_deckname(st.session_state.user_name)
+        )
+    with cl2:
+        st.write('')
+        st.write('')
+        if st.button('呼び出す'):
+            fetch_all_info(st.session_state.user_name,deck_name,st.session_state)
+            
+    with st.expander("今の編成"):
+        st.text('プロデュースアイドル：'+st.session_state.Pidol_name+st.session_state.Pidol_index)
+        for i,Sidol in enumerate(st.session_state.support_list):
+            st.text(f'サポートアイドル{i+1}：'+Sidol)
+            tmp = [key+str(val) for key,val in st.session_state.EX_dict[Sidol].items()]
+            st.caption('--EXの上昇量：'+','.join(tmp))
+            
+        st.text('所得したパッシブ：')
+        for name,passive in st.session_state.passive_dict.items():
+            st.caption(passive.get_text())
+            
+        st.text('取得した札：')
+        for name,weapon in st.session_state.Pweapon_dict.items():
+            st.text(name+':'+weapon.get_text())
+
 with st.form(key = 'sim_info'):
     cl1,cl2 = st.columns(2)
     
     with cl1:
         audition_name = st.selectbox(
             'オーディション名',
-            audition_df.index.tolist(),
-            key = 'audition_name'
+            audition_df.index.tolist()
         )    
         
         trend = st.selectbox(
@@ -103,6 +133,7 @@ with st.form(key = 'sim_info'):
         sim_btn = st.form_submit_button('シュミレーション開始')
     
     if sim_btn:
+        st.session_state.audition_name = audition_name
         st.session_state.status = status
         st.session_state.trend = [trend[x:x+2] for x in range(0, len(trend), 2)]
         st.session_state.aim_list = aim_list
