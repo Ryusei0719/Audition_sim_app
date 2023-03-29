@@ -104,13 +104,13 @@ with st.form(key = 'sim_info'):
         with cl1:
             aim_list[i] = st.selectbox(
                 '殴り先',
-                ('Vo','Da','Vi'),
+                ('Vo','Da','Vi','ランダム'),
                 key = f'aim{i}'
             )
         with cl2:
             critical_list[i] = st.selectbox(
                 '判定',
-                ('Perfect','Good','Normal','Bad'),
+                ('Perfect','Good','Normal','Bad','ランダム'),
                 key = f'critical{i}'
             )
         weapon_list[i] = st.selectbox(
@@ -135,6 +135,7 @@ with st.form(key = 'sim_info'):
     if sim_btn:
         st.session_state.audition_name = audition_name
         st.session_state.status = status
+        aim_list = [random.choice(['Vo','Da','Vi']) for x in aim_list if x == 'ランダム']
         st.session_state.trend = [trend[x:x+2] for x in range(0, len(trend), 2)]
         st.session_state.aim_list = aim_list
         for i,x in enumerate(weapon_list):
@@ -142,6 +143,8 @@ with st.form(key = 'sim_info'):
                 weapon_list[i] = '*'
             elif x == 'おまかせ(全観客に与えるアピール値の総和が最も大きい札を切る)':
                 weapon_list[i] = '+'
+            elif x == 'ランダム':
+                weapon_list[i] = [random.choice(['Perfect','Good','Normal'])]
         st.session_state.weapon_list = weapon_list
         st.session_state.critical_list = [critical_full_name_dict[x] for x in critical_list]
         finish_flg = False
