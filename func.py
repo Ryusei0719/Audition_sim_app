@@ -32,6 +32,7 @@ import numpy as np
 from google.oauth2 import service_account
 import gspread
 import pandas as pd
+from stqdm import stqdm
 # スプレッドシートの認証
 scopes = [ 'https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
 credentials = service_account.Credentials.from_service_account_info( st.secrets["gcp_service_account"], scopes=scopes)
@@ -570,7 +571,7 @@ def sumilate():
     st.session_state.support_df = support_df
     #st.write(st.session_state.support_df)
 
-    for i in range(itr_num):
+    for i in stqdm(range(itr_num)):
         st.session_state.game_config = {
           'all_weapon':support_list + P_weapon, #選べる全アピール
           'passive_dict':st.session_state.passive_dict, #全パッシブ

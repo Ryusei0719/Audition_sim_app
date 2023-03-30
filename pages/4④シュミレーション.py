@@ -1,6 +1,7 @@
 import streamlit as st
 from func import *
 from datahandler import *
+from stqdm import stqdm
 
 st.header('シュミレーション')
 st.text('札回しを選択してシュミレーションします')
@@ -135,7 +136,7 @@ with st.form(key = 'sim_info'):
     if sim_btn:
         st.session_state.audition_name = audition_name
         st.session_state.status = status
-        aim_list = [random.choice(['Vo','Da','Vi']) for x in aim_list if x == 'ランダム']
+        aim_list = [random.choice(['Vo','Da','Vi']) if x == 'ランダム' else x for x in aim_list]
         st.session_state.trend = [trend[x:x+2] for x in range(0, len(trend), 2)]
         st.session_state.aim_list = aim_list
         for i,x in enumerate(weapon_list):
@@ -143,10 +144,10 @@ with st.form(key = 'sim_info'):
                 weapon_list[i] = '*'
             elif x == 'おまかせ(全観客に与えるアピール値の総和が最も大きい札を切る)':
                 weapon_list[i] = '+'
-            elif x == 'ランダム':
-                weapon_list[i] = [random.choice(['Perfect','Good','Normal'])]
+        critical_list = [random.choice(['Perfect','Good','Normal']) if x == 'ランダム' else x for x in critical_list ]
         st.session_state.weapon_list = weapon_list
         st.session_state.critical_list = [critical_full_name_dict[x] for x in critical_list]
+        print(st.session_state.critical_list)
         finish_flg = False
         with st.spinner('シュミレーション中'):
             out = sumilate()
