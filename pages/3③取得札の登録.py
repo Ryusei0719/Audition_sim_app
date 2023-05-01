@@ -1,6 +1,8 @@
 import streamlit as st
 from Pweapon import *
 
+func.session_init()
+
 def info_init():
     info_dict = {
     'type':'single',

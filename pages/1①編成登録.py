@@ -3,6 +3,8 @@ from func import *
 import streamlit.components.v1 as components
 import webbrowser
 
+session_init()
+
 st.header('編成登録')
 st.text('シュミレーションする編成を登録してください')
 
