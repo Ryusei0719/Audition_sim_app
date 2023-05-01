@@ -6,6 +6,14 @@ func.session_init()
 st.header('取得札の登録')
 st.write('パネルを開けて獲得するアピール札の情報を登録してください。')
 
+def info_init():
+    info_dict = {
+    'type':'single',
+    'weapon_rate':{'Vo':0,'Da':0,'Vi':0,'Ex':0},
+    'buff':[],
+    'link':[None,None]
+    }
+    return info_dict
 
 tab1, tab2 = st.tabs(["札情報を自分で入力する", "データベース内の札を使用する"])
 with tab1:
