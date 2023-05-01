@@ -4,6 +4,8 @@ import streamlit as st
 from passive import *
 from func import *
 
+session_init()
+
 st.header('パッシブの登録')
 name = ''
 buffs = [["Vo",0],["Da",0],["Vi",0],['At',0],['Av',0]]

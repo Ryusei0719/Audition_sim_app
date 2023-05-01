@@ -3,24 +3,8 @@ from Pweapon import *
 
 func.session_init()
 
-def info_init():
-    info_dict = {
-    'type':'single',
-    'weapon_rate':{'Vo':0,'Da':0,'Vi':0,'Ex':0},
-    'buff':[],
-    'link':[None,None]
-    }
-    return info_dict
-
 st.header('取得札の登録')
 st.write('パネルを開けて獲得するアピール札の情報を登録してください。')
-if 'weapon_info' not in st.session_state:
-    st.session_state.weapon_info = info_init()
-
-if 'Pweapon_dict' not in st.session_state:
-    st.session_state.Pweapon_dict= {}
-    
-st.session_state.get_weapon_list = list(st.session_state.Pweapon_dict.values())
 
 
 tab1, tab2 = st.tabs(["札情報を自分で入力する", "データベース内の札を使用する"])
