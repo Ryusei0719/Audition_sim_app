@@ -1,6 +1,7 @@
 import streamlit as st
 from deta import Deta
 import datahandler as DH
+import func
 
 
 
@@ -11,3 +12,4 @@ import datahandler as DH
 
 link = '[TOPへ](/)'
 st.markdown(link, unsafe_allow_html=True)
+st.write(func.get_support_df())
