@@ -226,7 +226,7 @@ with tab2:
 
 st.markdown('***')
 st.subheader('登録されている札')
-for i,weapon in enumerate(st.session_state.get_weapon_list):
+for i,weapon in enumerate(st.session_state.Pweapon_list):
     st.text(str(i+1)+' : '+weapon._name)
     st.caption(weapon.get_text())
 
